@@ -1,0 +1,50 @@
+services: 
+  frontend:
+    build: ./Frontend_bd
+    container_name: frontend
+    ports: 
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - Ciruela
+    restart: always
+  
+  backend:
+    build: ./Backend_bd
+    container_name: backend
+    ports: 
+      - "5000:5000" # puerto_host:puerto_contenedor
+    depends_on:
+      - db
+    volumes:
+      - ./Backend_bd:/API
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: Obligatorio
+      
+    command: flask run --host=0.0.0.0 --debug
+
+    networks:
+      - Ciruela
+    restart: always
+    
+  db:
+    image: mysql:8.0
+    container_name: Obligatorio
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: Obligatorio
+    ports:
+      - "3001:3001"
+    networks:
+      - Ciruela
+    volumes: # Monta la carpeta local en esto, con la condición de que sean .sql y se ejecuta una vez al crear la base de datos
+      - ./db:/docker-entrypoint-initdb.d:ro 
+
+
+networks:
+  Ciruela: 
