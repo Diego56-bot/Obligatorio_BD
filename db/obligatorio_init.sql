@@ -39,8 +39,7 @@ CREATE TABLE participanteProgramaAcademico (
                                                ci_participante INT,
                                                nombre_plan VARCHAR(80) NOT NULL,
                                                rol ENUM('Alumno', 'Docente') NOT NULL,
-                                               FOREIGN KEY (ci_participante) REFERENCES usuario(ci)
-                                                   ON UPDATE CASCADE,
+                                               FOREIGN KEY (ci_participante) REFERENCES usuario(ci),
                                                FOREIGN KEY (nombre_plan) REFERENCES planAcademico(nombre_plan)
 );
 
@@ -80,7 +79,6 @@ CREATE TABLE reserva (
                          FOREIGN KEY (edificio) REFERENCES edificio(nombre_edificio),
                          FOREIGN KEY (id_turno) REFERENCES turno(id_turno),
                          FOREIGN KEY (ci_organizador) REFERENCES usuario(ci)
-                             ON UPDATE CASCADE
 );
 
 CREATE TABLE reservaParticipante (
@@ -91,8 +89,7 @@ CREATE TABLE reservaParticipante (
                                      confirmacion ENUM('Pendiente', 'Confirmado', 'Rechazado') NOT NULL DEFAULT 'Pendiente',
                                      resenado BOOLEAN DEFAULT FALSE,
                                      PRIMARY KEY (ci_participante, id_reserva),
-                                     FOREIGN KEY (ci_participante) REFERENCES usuario(ci)
-                                         ON UPDATE CASCADE,
+                                     FOREIGN KEY (ci_participante) REFERENCES usuario(ci),
                                      FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva)
                                          ON UPDATE CASCADE
 );
@@ -104,7 +101,6 @@ CREATE TABLE sancion_participante (
                                       fecha_inicio DATE NOT NULL,
                                       fecha_fin DATE NOT NULL,
                                       FOREIGN KEY (ci_participante) REFERENCES usuario(ci)
-                                          ON UPDATE CASCADE
 );
 
 CREATE TABLE resena (
@@ -114,8 +110,7 @@ CREATE TABLE resena (
                         fecha_publicacion DATETIME NOT NULL DEFAULT NOW(),
                         puntaje_general INT NOT NULL CHECK (puntaje_general BETWEEN 1 AND 5),
                         descripcion VARCHAR(255) DEFAULT NULL,
-                        FOREIGN KEY (ci_participante) REFERENCES usuario(ci)
-                            ON UPDATE CASCADE,
+                        FOREIGN KEY (ci_participante) REFERENCES usuario(ci),
                         CONSTRAINT fk_resena_reserva
                             FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva)
                                 ON UPDATE CASCADE
@@ -186,10 +181,17 @@ INSERT INTO edificio (nombre_edificio, direccion, campus) VALUES
 INSERT INTO salasDeEstudio (nombre_sala, edificio, capacidad, tipo_sala, disponible) VALUES
                                                                                          ('Sala 1', 'Edificio Sacré Coeur', 20, 'Libre', TRUE),
                                                                                          ('Sala 2', 'Edificio Sacré Coeur', 8, 'Docente', TRUE),
+                                                                                         ('Sala 3', 'Edificio Sacré Coeur', 4, 'Posgrado', TRUE),
+                                                                                         ('Sala 4', 'Edificio Sacré Coeur', 20, 'Libre', FALSE),
+                                                                                         ('Sala 5', 'Edificio Sacré Coeur', 8, 'Docente', FALSE),
+                                                                                         ('Sala 6', 'Edificio Sacré Coeur', 4, 'Posgrado', FALSE),
                                                                                          ('Sala S1', 'Edificio Semprún', 16, 'Posgrado', TRUE),
                                                                                          ('Sala S2', 'Edificio Semprún', 10, 'Libre', FALSE),
+                                                                                         ('Sala S3', 'Edificio Semprún', 10, 'Libre', TRUE),
+                                                                                         ('Sala S4', 'Edificio Semprún', 10, 'Docente', TRUE),
                                                                                          ('Sala Mullin 1', 'Edificio Mullin', 12, 'Posgrado', TRUE),
                                                                                          ('Sala Mullin 2', 'Edificio Mullin', 6, 'Libre', TRUE),
+                                                                                         ('Sala Mullin 3', 'Edificio Mullin', 6, 'Docente', TRUE),
                                                                                          ('Sala San Ignacio A', 'Edificio San Ignacio', 15, 'Docente', TRUE),
                                                                                          ('Sala San Ignacio B', 'Edificio San Ignacio', 10, 'Libre', TRUE),
                                                                                          ('Sala Athanasius 1A', 'Edificio Athanasius', 14, 'Posgrado', FALSE),
@@ -197,6 +199,7 @@ INSERT INTO salasDeEstudio (nombre_sala, edificio, capacidad, tipo_sala, disponi
                                                                                          ('Sala Madre Marta 1', 'Edificio Madre Marta', 12, 'Docente', TRUE),
                                                                                          ('Sala Madre Marta 2', 'Edificio Madre Marta', 6, 'Libre', TRUE),
                                                                                          ('Sala X1', 'Casa Xalambrí', 10, 'Libre', FALSE),
+                                                                                         ('Sala X2', 'Casa Xalambrí', 10, 'Libre', FALSE),
                                                                                          ('Sala SJ 1', 'Edificio San José', 18, 'Posgrado', TRUE),
                                                                                          ('Sala SJ 2', 'Edificio San José', 8, 'Docente', TRUE),
                                                                                          ('Sala Sal1', 'Campus Salto', 20, 'Libre', TRUE),
@@ -222,6 +225,7 @@ INSERT INTO turno (hora_inicio, hora_fin) VALUES
                                               ('21:00:00', '22:00:00'),
                                               ('22:00:00', '23:00:00');
 
+
 INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador) VALUES
                                                                                  ('Sala 1',       'Edificio Sacré Coeur', '2025-12-01', 1, 55992757),
                                                                                  ('Sala 2',       'Edificio Sacré Coeur', '2025-12-02', 2, 10000020),
@@ -232,53 +236,73 @@ INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador) VAL
                                                                                  ('Sala C1',      'Edificio Candelaria',  '2025-12-07', 7, 10000020),
                                                                                  ('Sala SF1',     'San Fernando',         '2025-12-08', 8, 55992757);
 
+-- Reservas extra:
+-- 9 y 10: Finalizadas en el pasado
+-- 11: Cancelada en el pasado
+-- 12: Cancelada en el futuro
 INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador, estado) VALUES
-    ('Sala 1', 'Edificio Sacré Coeur', '2025-12-20', 1, 55992757, 'Finalizada');
-
-INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES (55992757,9,'Asiste','Confirmado',FALSE);
+                                                                                         ('Sala 1',              'Edificio Sacré Coeur', '2025-11-10', 1, 55992757, 'Finalizada'),
+                                                                                         ('Sala S2',             'Edificio Semprún',     '2025-10-05', 2, 10000020, 'Finalizada'),
+                                                                                         ('Sala Athanasius 2B',  'Edificio Athanasius',  '2025-11-15', 3, 55992757, 'Cancelada'),
+                                                                                         ('Sala Madre Marta 1',  'Edificio Madre Marta', '2025-12-10', 4, 10000020, 'Cancelada');
 
 
 INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES
+    (55992757, 9, 'Asiste', 'Confirmado', FALSE);
 
-                                                                                                      (55992757, 1, 'Asiste',     'Confirmado',  TRUE),
-                                                                                                      (10000008, 1, 'Asiste',     'Pendiente',  FALSE),
-                                                                                                      (10000014, 1, 'No asiste',  'Rechazado', FALSE),
+INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES
+                                                                                                      (55992757, 1, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000008, 1, 'Asiste',    'Pendiente',  FALSE),
+                                                                                                      (10000014, 1, 'No asiste', 'Rechazado',  FALSE),
 
-                                                                                                      (10000020, 2, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (10000036, 2, 'Asiste',     'Confirmado',  FALSE),
+                                                                                                      (10000020, 2, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757, 2, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (10000014, 3, 'Asiste',     'Confirmado',  TRUE),
-                                                                                                      (55992757, 3, 'No asiste',  'Pendiente', FALSE),
+                                                                                                      (10000014, 3, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (55992757, 3, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (55992757, 4, 'Asiste',     'Confirmado',  TRUE),
-                                                                                                      (10000058, 4, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (10000064, 4, 'No asiste',  'Pendiente', FALSE),
+                                                                                                      (55992757, 4, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000008, 4, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020, 4, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (10000008, 5, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (10000070, 5, 'Asiste',     'Confirmado',  FALSE),
+                                                                                                      (10000008, 5, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757, 5, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (10000008, 6, 'Asiste',     'Confirmado',  TRUE),
-                                                                                                      (10000014, 6, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (10000020, 6, 'No asiste',  'Pendiente', FALSE),
+                                                                                                      (10000008, 6, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000014, 6, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020, 6, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (10000020, 7, 'No asiste',  'Confirmado',  FALSE),
-                                                                                                      (10000042, 7, 'Asiste',     'Confirmado',  FALSE),
+                                                                                                      (10000020, 7, 'No asiste', 'Confirmado', FALSE),
+                                                                                                      (10000008, 7, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (55992757, 8, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (55574121, 8, 'Asiste',     'Confirmado',  FALSE),
-                                                                                                      (56901393, 8, 'No asiste',  'Pendiente', FALSE);
+                                                                                                      (55992757, 8, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000008, 8, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000014, 8, 'No asiste', 'Pendiente',  FALSE),
+
+                                                                                                      (10000020, 10, 'Asiste',   'Confirmado', FALSE),
+
+                                                                                                      (10000014, 11, 'No asiste','Confirmado', FALSE),
+
+                                                                                                      (10000008, 12, 'Asiste',   'Pendiente',  FALSE);
 
 INSERT INTO sancion_participante (ci_participante, motivo, fecha_inicio, fecha_fin) VALUES
-                                                                                        (10000014, 'Inasistencia', '2025-01-01', '2025-03-01'),
-                                                                                        (55992757, 'Inasistencia', '2025-02-15', '2025-04-15'),
-                                                                                        (10000020, 'Uso indebido', '2025-05-10', '2025-07-10');
+                                                                                        (10000014, 'Inasistencia', '2025-11-22', '2026-01-22'),
+                                                                                        (55992757, 'Inasistencia', '2025-11-21', '2026-01-21'),
+
+                                                                                        (10000020, 'Inasistencia', '2025-11-10', '2026-1-10'),
+
+                                                                                        (55992757, 'Uso indebido', '2025-11-22', '2025-12-06'),
+                                                                                        (10000008, 'Morosidad',    '2025-11-22', '2025-12-06');
 
 INSERT INTO resena (id_reserva, ci_participante, puntaje_general, descripcion) VALUES
-                                                                                   (1, 55992757, 5, 'Sala amplia y silenciosa. Ideal para trabajar en grupo.'),
-                                                                                   (3, 10000014, 3, 'Había algo de ruido en el pasillo.'),
-                                                                                   (4, 55992757, 5, 'Muy buena iluminación y sillas cómodas.'),
+                                                                                   (9,  55992757, 5, 'Sala amplia y silenciosa. Ideal para trabajar en grupo.'),
+                                                                                   (9,  10000014, 3, 'Había algo de ruido en el pasillo.'),
+                                                                                   (10, 55992757, 5, 'Muy buena iluminación y sillas cómodas.'),
+                                                                                   (10, 10000008, 4, 'Sala cómoda, pero la conexión Wi-Fi podría ser mejor.');
 
-                                                                                   (6, 10000008, 4, 'Sala cómoda, pero la conexión Wi-Fi podría ser mejor.');
+CREATE USER 'ucurooms_login'@'%' IDENTIFIED BY 'login_pass';
+GRANT SELECT ON Obligatorio.usuario TO 'ucurooms_login'@'%';
+GRANT SELECT ON Obligatorio.login  TO 'ucurooms_login'@'%';
 
 CREATE USER 'ucurooms_app'@'%' IDENTIFIED BY 'ucurooms_password';
 GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_app'@'%';

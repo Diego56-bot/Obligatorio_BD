@@ -17,14 +17,19 @@ services:
       - "5000:5000" # puerto_host:puerto_contenedor
     depends_on:
       - db
-    volumes:
-      - ./Backend_bd:/API
     environment:
       DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: rootpassword
       DB_NAME: Obligatorio
-      
+      DB_APP_USER: ucurooms_app
+      DB_APP_PASSWORD: ucurooms_password
+      DB_ADMIN_USER: ucurooms_admin
+      DB_ADMIN_PASSWORD: admin_pass
+      DB_FUNC_USER: ucurooms_funcionario
+      DB_FUNC_PASSWORD: funcionario_pass
+      DB_PART_USER: ucurooms_participante
+      DB_PART_PASSWORD: participante_pass
+      SECRET_KEY: super_clave_ultra_secreta_que_no_se_comparta
+
     command: flask run --host=0.0.0.0 --debug
 
     networks:
@@ -39,7 +44,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: Obligatorio
     ports:
-      - "3001:3001"
+      - "3307:3306"
     networks:
       - Ciruela
     volumes: # Monta la carpeta local en esto, con la condición de que sean .sql y se ejecuta una vez al crear la base de datos
