@@ -1,2 +1,2 @@
-# Obligatorio_BD-
+# Obligatorio_BD
 Obligatorio de Base de Datos
