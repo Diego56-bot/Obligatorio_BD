@@ -4,7 +4,6 @@ from validation import verificar_token, requiere_rol
 from validators import validar_disponibilidad_sala
 salas_bp = Blueprint('salas', __name__, url_prefix='/salas')
 
-# Mostrar todas las salas
 @salas_bp.route('/all', methods=['GET'])
 @verificar_token
 def obtener_todas_las_salas():
@@ -20,7 +19,6 @@ def obtener_todas_las_salas():
         cursor.close()
         connection.close()
 
-# Mostrar las salas disponibles
 @salas_bp.route('/disponibles', methods=['GET'])
 @verificar_token
 def obtener_salas_disponibles():
@@ -35,7 +33,7 @@ def obtener_salas_disponibles():
     finally:
         cursor.close()
         connection.close()
-
+        
 @salas_bp.route('/<string:nombre_sala>/<string:edificio>', methods=['GET'])
 @verificar_token
 def obtener_sala(nombre_sala, edificio):
@@ -57,7 +55,6 @@ def obtener_sala(nombre_sala, edificio):
         connection.close()
 
 
-# Buscar salas por nombre (puede devolver múltiples resultados)
 @salas_bp.route('/buscar/<string:nombre_sala>', methods=['GET'])
 @verificar_token
 def buscar_salas_por_nombre(nombre_sala):
@@ -77,6 +74,7 @@ def buscar_salas_por_nombre(nombre_sala):
     finally:
         cursor.close()
         connection.close()
+
 
 @salas_bp.route('/<string:edificio>', methods=['GET'])
 @verificar_token

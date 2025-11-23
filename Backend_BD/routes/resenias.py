@@ -124,7 +124,6 @@ def reseniasEspecifica(id):
         conection.close()
 
 
-#Añadir una reseña
 @resenias_bp.route('/registrar', methods=['POST'])
 @verificar_token
 @requiere_rol('Participante')
@@ -182,8 +181,6 @@ def aniadirResenia():
         cursor.close()
         conection.close()
 
-
-#Modificar una reseña 
 @resenias_bp.route('/modificar/<int:id>', methods=['PUT'])
 @verificar_token
 @requiere_rol('Administrador','Funcionario')
@@ -261,7 +258,6 @@ def modificarResenia(id):
         cursor.close()
         conection.close()
 
-#eliminar una reseña
 @resenias_bp.route('/eliminar/<int:id>', methods=['DELETE'])
 @verificar_token
 @requiere_rol('Administrador','Funcionario')

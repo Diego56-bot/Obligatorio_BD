@@ -35,7 +35,6 @@ def sanciones():
         cursor.close()
         conection.close()
         
-#Obtener una sanción específica
 @sanciones_bp.route('/sancion/<int:id>', methods=['GET'])
 @verificar_token
 @requiere_rol('Administrador', 'Funcionario')
@@ -69,7 +68,6 @@ def sancionEspecifica(id):
         cursor.close()
         conection.close()
 
-#Añadir una sancion
 @sanciones_bp.route('/registrar', methods=['POST'])
 @verificar_token
 @requiere_rol('Administrador', 'Funcionario')
@@ -117,7 +115,6 @@ def aniadirSancion():
         cursor.close()
         conection.close()
 
-#Modificar una sanción 
 @sanciones_bp.route('/modificar/<int:id>', methods=['PUT'])
 @verificar_token
 @requiere_rol('Administrador', 'Funcionario')
@@ -160,7 +157,6 @@ def modificarSancion(id):
         conection.close()
 
 
-#eliminar una sanción
 @sanciones_bp.route('/eliminar/<int:id>', methods=['DELETE'])
 @verificar_token
 @requiere_rol('Administrador', 'Funcionario')
