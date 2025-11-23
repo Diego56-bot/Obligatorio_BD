@@ -10,12 +10,15 @@ Una vez obtenido el link al repo de Github, se tienen dos ociones: clonar el rep
 3. Ejecutar el comando `docker compose up`  
 4. Abrir en el navegador (cualquiera): http://localhost:5173/  
 
-5. Una vez estando dentro de la API, se necesita ingresar correo y contraseña, para esto es necesario usar alguno de los ingresados en los inserts de la base de datos. Todos tienen como contraseña: contraseña_segura y el mail varía dependiendo del usuario, pero para ejemplos de cada rol: 
+5. Acceso a la API
 
-- facundo.piriz@correo.ucu.edu.uy = Administrador
+Una vez estando dentro de la API, se necesita ingresar correo y contraseña. Para esto es necesario usar alguno de los ingresados en los *inserts* de la base de datos.  
+Todos tienen como contraseña: **contraseña_segura**, y el mail varía dependiendo del usuario. A continuación, ejemplos para cada rol:
 
-- diego.deoliveira@correo.ucu.edu.uy = Funcionario
-  
-- agustin.garciab@correo.ucu.edu.uy = Participante común
+| Rol               | Correo                                      |
+|-------------------|----------------------------------------------|
+| Administrador      | `facundo.piriz@correo.ucu.edu.uy`           |
+| Funcionario        | `diego.deoliveira@correo.ucu.edu.uy`        |
+| Participante común | `agustin.garciab@correo.ucu.edu.uy`         |
 
 6. Una vez iniciado sesión, es posible usar todas las funcionalidades. Para cerrar sesión se puede presionar el botón de “cerrar sesión” 
