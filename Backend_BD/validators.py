@@ -7,7 +7,6 @@ def _to_time(value):
         return value
 
     if isinstance(value, timedelta):
-        # sumamos al día mínimo y sacamos solo la hora
         return (datetime.min + value).time()
 
     if isinstance(value, str):
@@ -129,7 +128,6 @@ def validar_cancelacion_reserva(id_reserva):
         return True, ""
 
     except Exception as e:
-        # Si querés loguear el error:
         print("ERROR en validar_cancelacion_reserva:", e)
         return False, "Error interno al validar la cancelación"
     finally:

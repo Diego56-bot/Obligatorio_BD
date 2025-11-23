@@ -49,7 +49,6 @@ def turnos():
         cursor.close()
         conection.close()
 
-#Obtener un turno específico
 @turno_bp.route('/turno/<int:id>', methods=['GET'])
 @verificar_token
 def turnoEspecifico(id):
