@@ -3,7 +3,7 @@ Obligatorio de Base de Datos
 
 ## Instrucciones para usar la API:
 
-Una vez obtenido el link al repo de Github, se tienen dos ociones: clonar el repositorio, o descargarlo como ZIP, esta segunda opción posiblemente sea la mejor ya que al clonar el repositorio de git se instalan más paquetes, los cuales necesarios para poder subir posibles cambios al repositorio, sin embargo, si no se van a realizar cambios esto último es innecesario. Una vez teniendo el proyecto descargado, es necesario tener instalada la aplicación Docker Desktop (aunque también es posible correr la API sin este, lo mejor es usarlo para mayor eficiencia). Una vez instalado el Docker, se tiene que hacer lo siguiente:
+Una vez obtenido el link al repo de Github, se tienen dos ociones: clonar el repositorio, o descargarlo como ZIP, esta segunda opción posiblemente sea la mejor ya que al clonar el repositorio de git se instalan más paquetes, los cuales son necesarios para poder subir posibles cambios al repositorio, sin embargo, si no se van a realizar cambios esto último es innecesario. Una vez teniendo el proyecto descargado, es necesario tener instalada la aplicación Docker Desktop (aunque también es posible correr la API sin este, lo mejor es usarlo para mayor eficiencia). Una vez instalado el Docker, se tiene que hacer lo siguiente:
 
 1. Ejecutar la aplicación  
 2. Abrir la carpeta con el proyecto en la terminal  
