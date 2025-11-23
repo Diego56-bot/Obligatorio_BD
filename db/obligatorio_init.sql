@@ -1,13 +1,14 @@
 DROP DATABASE IF EXISTS Obligatorio;
 CREATE DATABASE Obligatorio;
 USE Obligatorio;
+
 SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 SET character_set_connection = utf8mb4;
 SET character_set_results = utf8mb4;
 
 CREATE TABLE usuario (
-                         ci INT,
+                         ci INT PRIMARY KEY ,
                          nombre VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(nombre) >= 3),
                          apellido VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(apellido) >= 3),
                          email VARCHAR(50) UNIQUE CHECK (
@@ -15,8 +16,7 @@ CREATE TABLE usuario (
                                  OR LOWER(email) LIKE '%@ucu.edu.uy'
                              ),
                          rol ENUM('Participante', 'Funcionario', 'Administrador') NOT NULL DEFAULT 'Participante',
-                         activo BOOLEAN NOT NULL DEFAULT TRUE,
-                        PRIMARY KEY (ci, email)
+                         activo BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE login(
@@ -314,11 +314,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_app'@'%';
 CREATE USER 'ucurooms_participante'@'%' IDENTIFIED BY 'participante_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
-GRANT INSERT ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
+GRANT INSERT, UPDATE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.resena TO 'ucurooms_participante'@'%';
 GRANT UPDATE (puntaje) ON Obligatorio.salasDeEstudio TO 'ucurooms_participante'@'%';
 GRANT UPDATE ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
 GRANT UPDATE, DELETE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
+GRANT UPDATE ON Obligatorio.login  TO 'ucurooms_participante'@'%';
 
 CREATE USER 'ucurooms_funcionario'@'%' IDENTIFIED BY 'funcionario_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_funcionario'@'%';

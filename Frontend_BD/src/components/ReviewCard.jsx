@@ -23,7 +23,7 @@ export default function ReviewCard({ reserva, onReview }) {
 
                     <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600">
                         <FaStar className="h-3 w-3" />
-                        Reseña pendiente;
+                        Reseña pendiente
                     </p>
                 </div>
 

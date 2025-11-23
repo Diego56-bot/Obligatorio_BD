@@ -13,6 +13,7 @@ export default function ReservationCard({
                                             onInvite,
                                             onEdit,
                                             onDelete,
+                                            onManage,
                                             showCancel = true,
                                         }) {
     const { user } = useAuth();
@@ -52,8 +53,7 @@ export default function ReservationCard({
     return (
         <div
             className="
-        group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
-        transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md
+group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-500 hover:shadow-md
       "
         >
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -142,17 +142,15 @@ export default function ReservationCard({
                             >
                                 Editar
                             </button>
-                            {showCancel && (
+                            {onManage && (
                                 <button
-                                    onClick={() => onCancel?.(reserva)}
-                                    className="
-                    rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white
-                    hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600
-                  "
+                                    onClick={() => onManage(reserva)}
+                                    className="inline-flex items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100"
                                 >
-                                    Cancelar
+                                    Gestionar
                                 </button>
                             )}
+
                         </>
                     ) : isOrganizer ? (
                         <>
