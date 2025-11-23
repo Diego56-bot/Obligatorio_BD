@@ -12,10 +12,10 @@ Una vez obtenido el link al repo de Github, se tienen dos ociones: clonar el rep
 
 5. Una vez estando dentro de la API, se necesita ingresar correo y contraseña, para esto es necesario usar alguno de los ingresados en los inserts de la base de datos. Todos tienen como contraseña: contraseña_segura y el mail varía dependiendo del usuario, pero para ejemplos de cada rol: 
 
-facundo.piriz@correo.ucu.edu.uy = Administrador
-
-diego.deoliveira@correo.ucu.edu.uy = Funcionario
-
-agustin.garciab@correo.ucu.edu.uy = Participante común
+  facundo.piriz@correo.ucu.edu.uy = Administrador
+  
+  diego.deoliveira@correo.ucu.edu.uy = Funcionario
+  
+  agustin.garciab@correo.ucu.edu.uy = Participante común
 
 6. Una vez iniciado sesión, es posible usar todas las funcionalidades. Para cerrar sesión se puede presionar el botón de “cerrar sesión” 
