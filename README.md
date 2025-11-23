@@ -14,7 +14,8 @@ Una vez obtenido el link al repo de Github, se tienen dos ociones: clonar el rep
 ### Acceso a la página
 
 Una vez estando dentro de la API, se necesita ingresar correo y contraseña. Para esto es necesario usar alguno de los ingresados en los *inserts* de la base de datos.  
-Todos tienen como contraseña: **contraseña_segura**, y el mail varía dependiendo del usuario. A continuación, ejemplos para cada rol:
+Todos tienen como contraseña: **contraseña_segura**
+Y el mail varía dependiendo del usuario. A continuación, ejemplos para cada rol:
 
 | Rol               | Correo                                      |
 |-------------------|----------------------------------------------|
