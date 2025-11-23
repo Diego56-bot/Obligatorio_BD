@@ -97,31 +97,15 @@ def cant_reservas_carr_facu():
 @verificar_token
 @requiere_rol('Administrador', 'Funcionario')
 def porcentaje_ocupacion_salas_edificio():
-    query = """
-    SELECT edificio,
-           SUM(total_participantes) AS participantes_totales,
-           SUM(capacidad_reservada) AS capacidad_total,
-           ROUND(
-               100.0 * SUM(total_participantes) /
-               NULLIF(SUM(capacidad_reservada), 0),
-               2
-           ) AS porcentaje_ocupacion
-    FROM (
-        SELECT r.edificio,
-               s.capacidad AS capacidad_reservada,
-               (
-                   SELECT COUNT(*)
-                   FROM reservaParticipante rp
-                   WHERE rp.id_reserva = r.id_reserva
-               ) AS total_participantes
-        FROM reserva r
-        JOIN salasDeEstudio s
-            ON r.nombre_sala = s.nombre_sala
-           AND r.edificio = s.edificio
-        WHERE r.estado = 'Finalizada'
-    ) ocupacion
-    GROUP BY edificio
-    ORDER BY porcentaje_ocupacion DESC;
+    query = """ SELECT ppa.rol, pa.tipo,
+       COUNT(DISTINCT rp.id_reserva) AS total_reservas,
+       SUM(CASE WHEN rp.asistencia = 'Asiste' THEN 1 ELSE 0 END) AS total_asistencias
+    FROM reservaParticipante rp
+    JOIN participanteProgramaAcademico ppa ON rp.ci_participante = ppa.ci_participante
+    JOIN planAcademico pa ON ppa.nombre_plan = pa.nombre_plan
+    GROUP BY ppa.rol, pa.tipo
+    ORDER BY total_reservas DESC;
+   
     """
     return run_query(query)
 
