@@ -16,7 +16,6 @@ export default function ReseniasPage() {
   const [modalEliminar, setModalEliminar] = useState({ open: false, id: null });
   const [modalEditar, setModalEditar] = useState({ open: false, resena: null });
 
-  // Cargar reseñas
   useEffect(() => {
     let ignore = false;
 
@@ -78,8 +77,7 @@ export default function ReseniasPage() {
                       {r.nombre_completo} ({r.ci_participante})
                     </h3>
 
-                    {/* Estrellas */}
-                    <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <span
                           key={i}
@@ -134,7 +132,6 @@ export default function ReseniasPage() {
             </div>
             </section>
 
-            {/* MODALES */}
             <ModalEliminar
               open={modalEliminar.open}
               onClose={() => setModalEliminar({ open: false, id: null })}
