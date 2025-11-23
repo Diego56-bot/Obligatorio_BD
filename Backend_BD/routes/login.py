@@ -152,15 +152,33 @@ def obtener_usuarios():
 @requiere_rol('Administrador', 'Funcionario', 'Participante')
 def obtener_usuario_por_ci(ci):
     connection = get_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT ci, nombre, apellido, email, rol FROM usuario WHERE ci = %s", (ci,))
+        cursor.execute("""
+                       SELECT ci, nombre, apellido, email, rol
+                       FROM usuario
+                       WHERE ci = %s
+                       """, (ci,))
         usuario = cursor.fetchone()
-        if usuario:
-            return jsonify(usuario), 200
-        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        if not usuario:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        programas = []
+        if usuario["rol"] == "Participante":
+            cursor.execute("""
+                           SELECT ppa.nombre_plan, ppa.rol
+                           FROM participanteProgramaAcademico ppa
+                           WHERE ppa.ci_participante = %s
+                           """, (ci,))
+            programas = cursor.fetchall()
+
+        usuario["programas"] = programas
+        return jsonify(usuario), 200
+
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
     finally:
         cursor.close()
         connection.close()
@@ -175,6 +193,7 @@ def actualizar_usuario(ci):
     email = data.get('email')
     rol = data.get('rol')
     contrasena = data.get('contrasena')
+    programas = data.get('programas', [])  # [{nombre_plan, rol}, ...]
 
     if not all([nombre, apellido, email, rol]) or not all(str(x).strip() for x in [nombre, apellido, email, rol]):
         return jsonify({'error': 'Faltan datos requeridos'}), 400
@@ -185,37 +204,64 @@ def actualizar_usuario(ci):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT email FROM usuario WHERE ci = %s", (ci,))
-        row = cursor.fetchone()
-        if not row:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
-
-        cursor = conn.cursor()
         cursor.execute("""
-                       UPDATE usuario
-                       SET nombre   = %s,
-                           apellido = %s,
-                           email    = %s,
-                           rol      = %s
-                       WHERE ci = %s
-                       """, (nombre, apellido, email, rol, ci))
+            SELECT ci, nombre, apellido, email, rol
+            FROM usuario
+            WHERE ci = %s
+        """, (ci,))
+        row = cursor.fetchone()
 
-        if cursor.rowcount == 0:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
+        if not row:
+            return jsonify({'error': f'Usuario no encontrado (ci={ci})'}), 404
+
+        old_rol = row["rol"]
+
+        cursor.execute("""
+            UPDATE usuario
+               SET nombre   = %s,
+                   apellido = %s,
+                   email    = %s,
+                   rol      = %s
+             WHERE ci = %s
+        """, (nombre, apellido, email, rol, ci))
 
         if contrasena:
             contrasena_hasheada = hasheo(contrasena)
             cursor.execute("""
-                           UPDATE login
-                           SET contrasena = %s
-                           WHERE email = %s
-                           """, (contrasena_hasheada, email))
+                UPDATE login
+                   SET contrasena = %s
+                 WHERE email = %s
+            """, (contrasena_hasheada, email))
+
+        if rol == 'Participante':
+            cursor.execute("""
+                DELETE FROM participanteProgramaAcademico
+                 WHERE ci_participante = %s
+            """, (ci,))
+
+            for p in programas or []:
+                nombre_plan = p.get("nombre_plan")
+                rol_acad = p.get("rol")
+                if not nombre_plan or not rol_acad:
+                    continue
+                cursor.execute("""
+                    INSERT INTO participanteProgramaAcademico (ci_participante, nombre_plan, rol)
+                    VALUES (%s, %s, %s)
+                """, (ci, nombre_plan, rol_acad))
+
+        else:
+            if old_rol == 'Participante':
+                cursor.execute("""
+                    DELETE FROM participanteProgramaAcademico
+                     WHERE ci_participante = %s
+                """, (ci,))
 
         conn.commit()
         return jsonify({'mensaje': 'Usuario actualizado correctamente'}), 200
 
     except Exception as e:
         conn.rollback()
+        print("ERROR actualizar_usuario:", e)
         return jsonify({'error': str(e)}), 400
     finally:
         cursor.close()
