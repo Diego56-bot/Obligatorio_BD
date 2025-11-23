@@ -158,10 +158,8 @@ export default function ModalEditarUsuario({ open, onClose, usuario, token, onCo
     };
 
     return (
-        // 🔴 CAMBIOS AQUÍ: overflow-y-auto + items-start + padding vertical
         <div className="fixed inset-0 z-50 bg-black/50 flex justify-center items-start overflow-y-auto">
             <div className="w-full max-w-md my-8">
-                {/* 🔴 max-h para que el modal nunca pase la pantalla y haga scroll interno */}
                 <div className="bg-white rounded-xl shadow-lg p-6 max-h-[90vh] overflow-y-auto">
                     <h2 className="text-xl font-bold mb-4">
                         {usuario ? "Editar Usuario" : "Añadir Usuario"}

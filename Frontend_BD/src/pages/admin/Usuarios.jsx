@@ -38,9 +38,23 @@ export default function UsuariosPage() {
         setModalEliminar({ open: true, ci });
     }
 
-    function handleOpenEditar(usuario) {
-        setModalEditar({ open: true, usuario });
+    function handleOpenEditar(usuarioBasico) {
+        setModalEditar({ open: true, usuario: null });
+
+        (async () => {
+            try {
+                const usuarioCompleto = await apiFetch(
+                    `/login/usuarios/${usuarioBasico.ci}`,
+                    { token }
+                );
+                setModalEditar({ open: true, usuario: usuarioCompleto });
+            } catch (err) {
+                console.error("Fallo /login/usuarios/<ci>:", err);
+                setModalEditar({ open: false, usuario: null });
+            }
+        })();
     }
+
 
     async function refresh() {
         const data = await apiFetch("/login/usuarios", { token });

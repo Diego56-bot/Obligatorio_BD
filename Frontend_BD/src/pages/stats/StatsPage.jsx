@@ -23,7 +23,6 @@ import CanvasJSReact from "@canvasjs/react-charts";
 export default function StatsPage() {
 
     const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-    //Variables que setean las queries
     const [salasMasReservadas, setSalasMasReservadas] = useState([]);
     const [turnosDemandados, setTurnosDemandados] = useState([]);
     const [promedioParticipantes, setPromedioParticipantes] = useState([]);
@@ -35,7 +34,6 @@ export default function StatsPage() {
     const [top10Usuarios, setTop10Usuarios] = useState([]);
     const [reservasPorDia, setReservasPorDia] = useState([]);
     const [salasMenorOcupacion, setSalasMenorOcupacion] = useState([]);
-    //Variables para checkar
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const reservasPorDiaOptions = {

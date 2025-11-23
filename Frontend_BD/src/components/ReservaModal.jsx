@@ -122,8 +122,8 @@ export default function ReservaModal({
         [programas]
     );
 
-    const tienePostgrado = useMemo(
-        () => programas.some((p) => (p.tipo || "").toLowerCase() === "postgrado"),
+    const tienePosgrado = useMemo(
+        () => programas.some((p) => (p.tipo || "").toLowerCase() === "posgrado"),
         [programas]
     );
 
@@ -132,14 +132,15 @@ export default function ReservaModal({
 
         if (!tipo || tipo === "libre") return true;
         if (tipo === "docente") return esDocente;
-        if (tipo === "postgrado") return esDocente || tienePostgrado;
+
+        if (tipo === "posgrado") return tienePosgrado;
 
         return false;
     }
 
     const salasFiltradas = useMemo(
         () => salas.filter((s) => puedeReservarSala(s)),
-        [salas, esDocente, tienePostgrado]
+        [salas, esDocente, tienePosgrado]
     );
 
     // Turnos: solo cuando hay sala + fecha

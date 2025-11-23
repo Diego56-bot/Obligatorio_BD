@@ -282,6 +282,7 @@ export default function ParticipantePage() {
             );
 
             actualizarInvitacion(inv, "Confirmado");
+            triggerReload();
 
             toast.success("Invitación aceptada correctamente.");
         } catch (e) {
