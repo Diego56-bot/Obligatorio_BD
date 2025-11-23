@@ -70,9 +70,9 @@ def registrar_usuario():
     con = get_connection()
     cur = con.cursor(dictionary=True)
     try:
-        cur.execute("SELECT 1 FROM usuario WHERE ci = %s OR email = %s LIMIT 1", (ci, email))
+        cur.execute("SELECT 1 FROM usuario WHERE ci = %s AND email = %s LIMIT 1", (ci, email))
         if cur.fetchone():
-            return jsonify({'error': 'Ya existe un usuario con esa CI o email'}), 400
+            return jsonify({'error': 'Ya existe un usuario con esa CI y email'}), 400
 
         cur2 = con.cursor()
         cur2.execute(

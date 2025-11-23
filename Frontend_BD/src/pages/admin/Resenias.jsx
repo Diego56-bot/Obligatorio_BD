@@ -38,10 +38,6 @@ export default function ReseniasPage() {
     setModalEliminar({ open: true, id });
   }
 
-  function handleOpenEditar(resena) {
-    setModalEditar({ open: true, resena });
-  }
-
   async function refresh() {
     const data = await apiFetch("/resenas/all", { token });
     setResenias(data ?? []);
@@ -56,7 +52,7 @@ export default function ReseniasPage() {
 
         <div className="flex-1 overflow-auto py-8 px-4">
             <main className="max-w-5xl mx-auto w-full">
-            <div className="flex justify-between items-center px-4 mb-6">
+            <div className="flex justify-center items-center px-4 mb-6">
                 <h2 className="text-2xl sm:text-3xl font-bold text-blue-900">
                 Gestión de Reseñas
               </h2>
@@ -117,6 +113,16 @@ export default function ReseniasPage() {
                           <span className="font-semibold">Descripción:</span> {r.descripcion}
                       </p>
                   </div>
+
+                    <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+                        <button
+                            onClick={() => handleOpenEliminar(r.id_resena)}
+                            className="px-3 py-1 rounded-lg border border-red-600 text-red-600 hover:bg-red-50 font-medium transition"
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+
                 </div>
               ))}
 

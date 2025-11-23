@@ -3,7 +3,7 @@ import { apiFetch } from "../utils/api.js";
 
 const AuthContext = createContext();
 
-function getTokenExp(token) {
+export function getTokenExp(token) {
     if (!token) return null;
     try {
         const parts = token.split(".");
@@ -15,7 +15,7 @@ function getTokenExp(token) {
             .padEnd(parts[1].length + (4 - (parts[1].length % 4)) % 4, "=");
 
         const json = JSON.parse(atob(base64));
-        return json.exp || null; // en segundos
+        return json.exp || null;
     } catch {
         return null;
     }

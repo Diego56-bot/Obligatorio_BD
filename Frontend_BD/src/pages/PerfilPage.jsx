@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { apiFetch } from "../utils/api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function getTokenExp(token) {
     if (!token) return null;
@@ -38,6 +39,7 @@ function formatTimeLeft(sec) {
 
 export default function PerfilPage() {
     const { user, token, updateToken } = useAuth();
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
     const [savingPassword, setSavingPassword] = useState(false);
@@ -210,16 +212,37 @@ export default function PerfilPage() {
 
     const rol = form.rol || user?.rol;
 
+    function handleGoHome() {
+        if (rol === "Administrador") {
+            navigate("/admin");
+        } else if (rol === "Funcionario") {
+            navigate("/funcionario");
+        } else {
+            navigate("/participante");
+        }
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-slate-50">
             <Navbar />
             <main className="flex-1">
                 <div className="mx-auto max-w-5xl px-4 py-8">
                     <div className="mb-6 flex flex-col gap-2">
-                        <h1 className="text-2xl font-bold text-slate-900">Mi perfil</h1>
-                        <p className="text-sm text-slate-600">
-                            Gestiona tus datos personales, rol y opciones de seguridad.
-                        </p>
+                        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h1 className="text-2xl font-bold text-slate-900">Mi perfil</h1>
+                                <p className="text-sm text-slate-600">
+                                    Gestiona tus datos personales, rol y opciones de seguridad.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleGoHome}
+                                className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                            >
+                                Volver a la página principal
+                            </button>
+                        </div>
                     </div>
 
                     {loading ? (
@@ -228,7 +251,7 @@ export default function PerfilPage() {
                         </div>
                     ) : (
                         <div className="grid gap-6 lg:grid-cols-3">
-                            {/* Card resumen */}
+
                             <section className="lg:col-span-1 rounded-2xl bg-white p-5 shadow-sm border border-slate-100">
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="min-w-0">
@@ -402,49 +425,46 @@ export default function PerfilPage() {
 
 
 
-                            <section className="lg:col-span-2 rounded-2xl bg-white p-5 shadow-sm border border-slate-100">
-                                {rol === "Participante" && (
-                                    <>
-                                        <h2 className="text-sm font-semibold text-slate-900 mb-3">
-                                            Información académica y sanciones
-                                        </h2>
+                            {rol === "Participante" && (
+                                <section className="lg:col-span-2 rounded-2xl bg-white p-5 shadow-sm border border-slate-100">
+                                    <h2 className="text-sm font-semibold text-slate-900 mb-3">
+                                        Información académica y sanciones
+                                    </h2>
 
-                                        <div>
-                                            <p className="text-xs font-semibold text-slate-600 mb-1">
-                                                Sanciones activas:
-                                            </p>
-                                            {loadingSanciones ? (
-                                                <p className="text-sm text-slate-500">Cargando sanciones...</p>
-                                            ) : sanciones.length === 0 ? (
-                                                <p className="text-sm text-emerald-600">
-                                                    No tienes sanciones activas.
-                                                </p>
-                                            ) : (
-                                                <ul className="divide-y divide-slate-200 text-sm">
-                                                    {sanciones.map((s) => (
-                                                        <li
-                                                            key={s.id_sancion}
-                                                            className="py-2 flex items-center justify-between"
-                                                        >
-                                                            <div>
-                                                                <div className="font-medium text-slate-800">
-                                                                    {s.motivo}
-                                                                </div>
-                                                                <div className="text-xs text-slate-500">
-                                                                    Desde {s.fecha_inicio} hasta {s.fecha_fin}
-                                                                </div>
+                                    <div>
+                                        <p className="text-xs font-semibold text-slate-600 mb-1">
+                                            Sanciones activas:
+                                        </p>
+
+                                        {loadingSanciones ? (
+                                            <p className="text-sm text-slate-500">Cargando sanciones...</p>
+                                        ) : sanciones.length === 0 ? (
+                                            <p className="text-sm text-emerald-600">No tienes sanciones activas.</p>
+                                        ) : (
+                                            <ul className="divide-y divide-slate-200 text-sm">
+                                                {sanciones.map((s) => (
+                                                    <li
+                                                        key={s.id_sancion}
+                                                        className="py-2 flex items-center justify-between"
+                                                    >
+                                                        <div>
+                                                            <div className="font-medium text-slate-800">
+                                                                {s.motivo}
                                                             </div>
-                                                            <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                                                            <div className="text-xs text-slate-500">
+                                                                Desde {s.fecha_inicio} hasta {s.fecha_fin}
+                                                            </div>
+                                                        </div>
+                                                        <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700">
                                 Activa
-                              </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-                                        </div>
-                                    </>
-                                )}
-                            </section>
+                            </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </section>
+                            )}
                         </div>
                     )}
                 </div>
