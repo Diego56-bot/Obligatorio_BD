@@ -42,81 +42,90 @@ export default function UsuariosPage() {
         setModalEditar({ open: true, usuario });
     }
 
-
     async function refresh() {
         const data = await apiFetch("/login/usuarios", { token });
         setUsuarios(data ?? []);
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-100 to-blue-50 flex flex-col">
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-200 to-blue-100">
+            <Navbar />
 
-            <Navbar/>
-
-            <div className="flex flex-1 h-full">
-
+            <div className="flex flex-1">
                 <SidebarAdmin />
 
-                <div className="flex-1 overflow-auto py-8 px-4">
-                    <main className="max-w-3xl mx-auto w-full">
+                <main className="flex-1 flex justify-center overflow-y-auto overflow-x-hidden px-2 sm:px-4 py-6 sm:py-8">
+                    <div className="w-full max-w-5xl mx-auto">
+                        {/* Header */}
+                        <header className="mb-6 sm:mb-8">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 px-1 sm:px-0">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-blue-800 text-center sm:text-left">
+                                    Gestión de Usuarios
+                                </h2>
 
-                        <div className="flex justify-between items-center px-4 mb-6">
-                            <h2 className="text-3xl font-bold text-blue-800">Gestión de Usuarios</h2>
+                                <div className="flex justify-center sm:justify-end">
+                                    <button
+                                        onClick={() => navigate("/registro")}
+                                        className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 shadow text-sm sm:text-base"
+                                    >
+                                        Añadir usuario
+                                    </button>
+                                </div>
+                            </div>
+                        </header>
 
-                            <button
-                                onClick={() => navigate("/registro")}
-                                className="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 shadow"
-                            >
-                                Añadir usuario
-                            </button>
-                        </div>
-
-                        <div className="flex flex-col gap-4 px-4">
+                        <section className="space-y-4 px-1 sm:px-0 pb-6">
                             {usuarios.map((u) => (
-                                <div
+                                <article
                                     key={u.ci}
-                                    className="bg-white shadow-md rounded-xl p-5 w-full flex justify-between items-center border border-gray-200"
+                                    className="
+                    group rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm
+                    flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4
+                    transition hover:-translate-y-0.5 hover:border-blue-700 hover:shadow-md
+                  "
                                 >
-                                    <div>
-                                        <h3 className="text-xl font-semibold text-blue-800">
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-lg sm:text-xl font-semibold text-blue-800 break-words">
                                             {u.nombre} {u.apellido}
                                         </h3>
 
-                                        <p className="text-gray-700 -mt-1 mb-2">
+                                        <p className="text-gray-700 -mt-1 mb-1 text-sm sm:text-base">
                                             <span className="font-semibold">CI:</span> {u.ci}
                                         </p>
 
-                                        <p className="text-gray-600">
+                                        <p className="text-gray-600 text-sm sm:text-base break-all">
                                             <span className="font-semibold">Email:</span> {u.email}
                                         </p>
 
-                                        <p className="text-gray-600">
+                                        <p className="text-gray-600 text-sm sm:text-base">
                                             <span className="font-semibold">Rol:</span> {u.rol}
                                         </p>
                                     </div>
 
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
                                         <button
                                             onClick={() => handleOpenEditar(u)}
-                                            className="px-4 py-2 border border-blue-700 text-blue-700 rounded-lg hover:bg-blue-50 transition"
+                                            className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
                                         >
                                             Editar
                                         </button>
 
                                         <button
                                             onClick={() => handleOpenEliminar(u.ci)}
-                                            className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
+                                            className="text-xs sm:text-sm px-3 py-1 rounded-lg border border-red-600 text-red-600 hover:bg-red-50 font-medium transition"
                                         >
                                             Eliminar
                                         </button>
                                     </div>
-                                </div>
+                                </article>
                             ))}
 
                             {usuarios.length === 0 && (
-                                <div className="text-gray-600 text-sm">No hay usuarios registrados.</div>
+                                <div className="text-gray-600 text-sm text-center bg-white/70 rounded-xl py-4">
+                                    No hay usuarios registrados.
+                                </div>
                             )}
-                        </div>
+                        </section>
 
                         <ModalEliminar
                             open={modalEliminar.open}
@@ -141,12 +150,11 @@ export default function UsuariosPage() {
                             }}
                             titulo={modalEditar.usuario ? "Editar usuario" : "Añadir usuario"}
                         />
-                    </main>
-                </div>
+                    </div>
+                </main>
             </div>
 
-            <Footer/>
-
+            <Footer />
         </div>
     );
 }

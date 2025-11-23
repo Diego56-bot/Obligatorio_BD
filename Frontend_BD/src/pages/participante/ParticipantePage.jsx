@@ -258,6 +258,26 @@ export default function ParticipantePage() {
     };
   }, [token, tab, user?.ci, reloadFlag]);
 
+    const actualizarInvitacion = (inv, nuevaConfirmacion) => {
+        const actualizada = { ...inv, confirmacion: nuevaConfirmacion };
+
+        // La saco de pendientes sí o sí
+        setInvitaciones((prev) =>
+            prev.filter((r) => r.id_reserva !== inv.id_reserva)
+        );
+
+        // En confirmadas: si existe, la reemplazo; si no existe, la agrego
+        setConfirmadas((prev) => {
+            const yaExiste = prev.some((r) => r.id_reserva === inv.id_reserva);
+            if (yaExiste) {
+                return prev.map((r) =>
+                    r.id_reserva === inv.id_reserva ? actualizada : r
+                );
+            }
+            return [actualizada, ...prev];
+        });
+    };
+
   const handleAceptarInvitacion = async (inv) => {
     try {
       await apiFetch(`/reservas/confirmacion/${inv.id_reserva}`, {
@@ -270,11 +290,9 @@ export default function ParticipantePage() {
         prev.filter((r) => r.id_reserva !== inv.id_reserva)
       );
 
-      const invConfirmada = { ...inv, confirmacion: "Confirmado" };
-      setConfirmadas((prev) => [invConfirmada, ...prev]);
+        actualizarInvitacion(inv, "Confirmado");
 
-      triggerReload();
-      toast.success("Invitación aceptada correctamente.");
+        toast.success("Invitación aceptada correctamente.");
     } catch (e) {
       toast.error(e.message || "No se pudo aceptar la invitación.");
     }
@@ -291,10 +309,10 @@ export default function ParticipantePage() {
       setInvitaciones((prev) =>
         prev.filter((r) => r.id_reserva !== inv.id_reserva)
       );
-      const invConfirmada = { ...inv, confirmacion: "Rechazado" };
-      setConfirmadas((prev) => [invConfirmada, ...prev]);
+        actualizarInvitacion(inv, "Rechazado");
 
-      triggerReload();
+
+        triggerReload();
       toast.success("Invitación rechazada.");
     } catch (e) {
       toast.error(e.message || "No se pudo rechazar la invitación.");
@@ -422,117 +440,132 @@ export default function ParticipantePage() {
 
           {tab === "HACER" && <BuildingsGrid onReservaCreada={triggerReload} />}
 
-          {tab === "MISINV" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-3">
-                  Invitaciones Pendientes ({misInvitaciones.length})
-                </h2>
-                <div className="grid gap-3">
-                  {misInvitaciones.map((inv) => (
-                    <div
-                      key={inv.id_reserva}
-                      className="rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-slate-900">
-                            {inv.sala} - {inv.edificio}
-                          </h3>
-                          <div className="mt-2 space-y-1">
-                            <p className="text-sm text-slate-600">
-                              Fecha: {inv.fecha}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              Turno: {inv.turno}
-                            </p>
-                            <p className="text-sm font-medium text-amber-600">
-                              Estado: Pendiente
-                            </p>
-                          </div>
-                        </div>
+            {tab === "MISINV" && (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-900 mb-3">
+                            Invitaciones Pendientes ({misInvitaciones.length})
+                        </h2>
+                        <div className="grid gap-3">
+                            {misInvitaciones.map((inv) => (
+                                <div
+                                    key={inv.id_reserva}
+                                    className="rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-semibold text-slate-900">
+                                                {inv.sala} - {inv.edificio}
+                                            </h3>
+                                            <div className="mt-2 space-y-1">
+                                                <p className="text-sm text-slate-600">
+                                                    Fecha: {inv.fecha}
+                                                </p>
+                                                <p className="text-sm text-slate-600">
+                                                    Turno: {inv.turno}
+                                                </p>
+                                                <p className="text-sm font-medium text-amber-600">
+                                                    Estado: Pendiente
+                                                </p>
+                                            </div>
+                                        </div>
 
-                        <div className="flex flex-col gap-2">
-                          <button
-                            onClick={() => handleAceptarInvitacion(inv)}
-                            className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
-                          >
-                            ✓ Aceptar
-                          </button>
-                          <button
-                            onClick={() => handleRechazarInvitacion(inv)}
-                            className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition"
-                          >
-                            ✗ Rechazar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                                        <div className="flex flex-col gap-2">
+                                            <button
+                                                onClick={() => handleAceptarInvitacion(inv)}
+                                                className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
+                                            >
+                                                ✓ Aceptar
+                                            </button>
+                                            <button
+                                                onClick={() => handleRechazarInvitacion(inv)}
+                                                className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition"
+                                            >
+                                                ✗ Rechazar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
 
-                  {misInvitaciones.length === 0 && (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
-                      <p className="text-slate-600">
-                        No tienes invitaciones pendientes.
-                      </p>
+                            {misInvitaciones.length === 0 && (
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
+                                    <p className="text-slate-600">
+                                        No tienes invitaciones pendientes.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                  )}
+
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-900 mb-3">
+                            Invitaciones Confirmadas/Rechazadas ({invConfirmadas.length})
+                        </h2>
+                        <div className="grid gap-3">
+                            {invConfirmadas.map((inv) => {
+                                const isConfirmada = inv.confirmacion === "Confirmado";
+                                const borderColor = isConfirmada
+                                    ? "border-green-300"
+                                    : "border-red-300";
+                                const bgColor = isConfirmada ? "bg-green-50" : "bg-red-50";
+                                const textColor = isConfirmada
+                                    ? "text-green-600"
+                                    : "text-red-600";
+
+                                return (
+                                    <div
+                                        key={inv.id_reserva}
+                                        className={`rounded-lg border ${borderColor} ${bgColor} p-4 shadow-sm`}
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-semibold text-slate-900">
+                                                    {inv.sala} - {inv.edificio}
+                                                </h3>
+                                                <div className="mt-2 space-y-1">
+                                                    <p className="text-sm text-slate-600">
+                                                        Fecha: {inv.fecha}
+                                                    </p>
+                                                    <p className="text-sm text-slate-600">
+                                                        Turno: {inv.turno}
+                                                    </p>
+                                                    <p className={`text-sm font-medium ${textColor}`}>
+                                                        Estado: {inv.confirmacion}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-col gap-2">
+                                                <button
+                                                    onClick={() => handleAceptarInvitacion(inv)}
+                                                    className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
+                                                >
+                                                    ✓ Aceptar
+                                                </button>
+                                                <button
+                                                    onClick={() => handleRechazarInvitacion(inv)}
+                                                    className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition"
+                                                >
+                                                    ✗ Rechazar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {invConfirmadas.length === 0 && (
+                                <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
+                                    <p className="text-slate-600">
+                                        No has confirmado ninguna invitación aún.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-              </div>
-
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-3">
-                  Invitaciones Confirmadas/Rechazadas ({invConfirmadas.length})
-                </h2>
-                <div className="grid gap-3">
-                  {invConfirmadas.map((inv) => {
-                    const isConfirmada = inv.confirmacion === "Confirmado";
-                    const borderColor = isConfirmada
-                      ? "border-green-300"
-                      : "border-red-300";
-                    const bgColor = isConfirmada ? "bg-green-50" : "bg-red-50";
-                    const textColor = isConfirmada
-                      ? "text-green-600"
-                      : "text-red-600";
-
-                    return (
-                      <div
-                        key={inv.id_reserva}
-                        className={`rounded-lg border ${borderColor} ${bgColor} p-4 shadow-sm`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-slate-900">
-                              {inv.sala} - {inv.edificio}
-                            </h3>
-                            <div className="mt-2 space-y-1">
-                              <p className="text-sm text-slate-600">
-                                Fecha: {inv.fecha}
-                              </p>
-                              <p className="text-sm text-slate-600">
-                                Turno: {inv.turno}
-                              </p>
-                              <p className={`text-sm font-medium ${textColor}`}>
-                                Estado: {inv.confirmacion}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {invConfirmadas.length === 0 && (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
-                      <p className="text-slate-600">
-                        No has confirmado ninguna invitación aún.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+            )}
 
           {tab === "INVITAR" && (
             <div className="grid gap-3">

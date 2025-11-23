@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth, getTokenExp } from "../contexts/AuthContext";
 import { apiFetch } from "../utils/api";
 import { toast } from "react-toastify";
 import { FaLock } from "react-icons/fa"; // Ícono de candado
@@ -13,7 +13,30 @@ export default function SessionExpiredPage() {
 
     const [loadingRefresh, setLoadingRefresh] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [timeLeftMs, setTimeLeftMs] = useState(null);
 
+    useEffect(() => {
+        if (!token) {
+            setTimeLeftMs(null);
+            return;
+        }
+
+        const exp = getTokenExp(token);
+        if (!exp) {
+            setTimeLeftMs(null);
+            return;
+        }
+
+        const update = () => {
+            const msLeft = exp * 1000 - Date.now();
+            setTimeLeftMs(msLeft > 0 ? msLeft : 0);
+        };
+
+        update();
+        const intervalId = setInterval(update, 1000);
+
+        return () => clearInterval(intervalId);
+    }, [token]);
     const fromPath = location.state?.from?.pathname || "/perfil";
 
     useEffect(() => {
@@ -53,6 +76,14 @@ export default function SessionExpiredPage() {
         navigate("/login", { replace: true });
     }
 
+    let countdownText = null;
+    if (timeLeftMs !== null) {
+        const totalSeconds = Math.floor(timeLeftMs / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = String(totalSeconds % 60).padStart(2, "0");
+        countdownText = `${minutes}:${seconds}`;
+    }
+
     return (
         <div className="relative flex h-screen justify-center items-center overflow-hidden bg-[url(https://i.ytimg.com/vi/I2_PamgttyQ/maxresdefault.jpg)] bg-cover bg-center">
 
@@ -86,7 +117,12 @@ export default function SessionExpiredPage() {
                 <p className="text-sm text-slate-700 mb-6 text-center">
                     Tu sesión ha caducado o tu token ya no es válido. Elegí cómo querés continuar.
                 </p>
-
+                {countdownText && (
+                    <p className="text-sm font-medium text-center text-red-600 mb-4">
+                        La sesión se cerrará automáticamente en{" "}
+                        <span className="tabular-nums">{countdownText}</span>.
+                    </p>
+                )}
                 <div className="space-y-3">
                     <button
                         type="button"

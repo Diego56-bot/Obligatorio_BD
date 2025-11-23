@@ -59,7 +59,7 @@ export default function SancionesPage() {
                 <SidebarAdmin />
 
                 <div className="flex-1 overflow-auto py-8 px-4">
-                    <main className="max-w-3xl mx-auto w-full">
+                    <main className="max-w-5xl mx-auto w-full">
 
                         <div className="flex justify-between items-center px-4 mb-6">
                             <h2 className="text-3xl font-bold text-blue-800">Gestión de Sanciones</h2>
@@ -72,19 +72,21 @@ export default function SancionesPage() {
                             </button>
                         </div>
 
-                        {/* Mapea y muestra cada sanción */}
                         <div className="flex flex-col gap-4 px-4">
                             {sanciones.map((s) => (
                                 <div
                                     key={s.id_sancion}
-                                    className="bg-white shadow-md rounded-xl p-5 w-full flex justify-between items-center border border-gray-200"
-                                >
+                                    className="
+          group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
+          flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+          transition hover:-translate-y-0.5 hover:border-blue-700 hover:shadow-md
+        "                                >
                                     <div>
-                                        <h3 className="text-xl font-semibold text-blue-800">
+                                        <h3 className="text-xl font-semibold text-slate-900">
                                             Nombre: {s.nombre_completo ?? "Desconocido"}
                                         </h3>
 
-                                        <p className="text-gray-700 -mt-1 mb-2">
+                                        <p className="text-slate-600 -mt-1 mb-2">
                                             <span className="font-semibold">CI: {s.ci_participante}</span>
                                         </p>
 
@@ -104,14 +106,14 @@ export default function SancionesPage() {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleOpenEditar(s)}
-                                            className="px-4 py-2 border border-blue-700 text-blue-700 rounded-lg hover:bg-blue-50 transition"
+                                            className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
                                         >
                                             Editar
                                         </button>
 
                                         <button
                                             onClick={() => handleOpenEliminar(s.id_sancion)}
-                                            className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition"
+                                            className="text-xs sm:text-sm px-3 py-1 rounded-lg border border-red-600 text-red-600 hover:bg-red-50 font-medium transition"
                                         >
                                             Eliminar
                                         </button>
@@ -126,7 +128,6 @@ export default function SancionesPage() {
                         </div>
 
 
-                        {/* Modales */}
                         <ModalEliminar
                             open={modalEliminar.open}
                             onClose={() => setModalEliminar({ open: false, id: null })}

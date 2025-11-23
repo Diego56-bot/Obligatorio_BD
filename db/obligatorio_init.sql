@@ -1,9 +1,13 @@
 DROP DATABASE IF EXISTS Obligatorio;
 CREATE DATABASE Obligatorio;
 USE Obligatorio;
+SET NAMES utf8mb4;
+SET character_set_client = utf8mb4;
+SET character_set_connection = utf8mb4;
+SET character_set_results = utf8mb4;
 
 CREATE TABLE usuario (
-                         ci INT PRIMARY KEY,
+                         ci INT,
                          nombre VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(nombre) >= 3),
                          apellido VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(apellido) >= 3),
                          email VARCHAR(50) UNIQUE CHECK (
@@ -11,7 +15,8 @@ CREATE TABLE usuario (
                                  OR LOWER(email) LIKE '%@ucu.edu.uy'
                              ),
                          rol ENUM('Participante', 'Funcionario', 'Administrador') NOT NULL DEFAULT 'Participante',
-                         activo BOOLEAN NOT NULL DEFAULT TRUE
+                         activo BOOLEAN NOT NULL DEFAULT TRUE,
+                        PRIMARY KEY (ci, email)
 );
 
 CREATE TABLE login(
@@ -236,10 +241,7 @@ INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador) VAL
                                                                                  ('Sala C1',      'Edificio Candelaria',  '2025-12-07', 7, 10000020),
                                                                                  ('Sala SF1',     'San Fernando',         '2025-12-08', 8, 55992757);
 
--- Reservas extra:
--- 9 y 10: Finalizadas en el pasado
--- 11: Cancelada en el pasado
--- 12: Cancelada en el futuro
+
 INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador, estado) VALUES
                                                                                          ('Sala 1',              'Edificio Sacré Coeur', '2025-11-10', 1, 55992757, 'Finalizada'),
                                                                                          ('Sala S2',             'Edificio Semprún',     '2025-10-05', 2, 10000020, 'Finalizada'),
@@ -294,11 +296,13 @@ INSERT INTO sancion_participante (ci_participante, motivo, fecha_inicio, fecha_f
                                                                                         (55992757, 'Uso indebido', '2025-11-22', '2025-12-06'),
                                                                                         (10000008, 'Morosidad',    '2025-11-22', '2025-12-06');
 
-INSERT INTO resena (id_reserva, ci_participante, puntaje_general, descripcion) VALUES
-                                                                                   (9,  55992757, 5, 'Sala amplia y silenciosa. Ideal para trabajar en grupo.'),
-                                                                                   (9,  10000014, 3, 'Había algo de ruido en el pasillo.'),
-                                                                                   (10, 55992757, 5, 'Muy buena iluminación y sillas cómodas.'),
-                                                                                   (10, 10000008, 4, 'Sala cómoda, pero la conexión Wi-Fi podría ser mejor.');
+INSERT INTO resena (id_reserva, ci_participante, puntaje_general, descripcion)
+VALUES
+    (9, 55992757, 5, 'Sala amplia y silenciosa'),
+    (9, 10000014, 3, 'Había algo de ruido en la sala'),
+    (10, 55992757, 5, 'Muy buena iluminación y espacio'),
+    (10, 10000008, 4, 'Sala cómoda, pero la computadora tenía fallas');
+
 
 CREATE USER 'ucurooms_login'@'%' IDENTIFIED BY 'login_pass';
 GRANT SELECT ON Obligatorio.usuario TO 'ucurooms_login'@'%';
@@ -310,8 +314,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_app'@'%';
 CREATE USER 'ucurooms_participante'@'%' IDENTIFIED BY 'participante_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
-GRANT INSERT, UPDATE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
+GRANT INSERT ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.resena TO 'ucurooms_participante'@'%';
+GRANT UPDATE (puntaje) ON Obligatorio.salasDeEstudio TO 'ucurooms_participante'@'%';
+GRANT UPDATE ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
+GRANT UPDATE, DELETE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
 
 CREATE USER 'ucurooms_funcionario'@'%' IDENTIFIED BY 'funcionario_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_funcionario'@'%';
@@ -323,3 +330,4 @@ GRANT INSERT, UPDATE, DELETE ON Obligatorio.resena TO 'ucurooms_funcionario'@'%'
 CREATE USER 'ucurooms_admin'@'%' IDENTIFIED BY 'admin_pass';
 GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_admin'@'%';
 
+FLUSH PRIVILEGES

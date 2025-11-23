@@ -1,5 +1,10 @@
 # Sistema en donde se hace la app
 FROM python:3.12 
+# Configurar UTF-8 en el contenedor
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONIOENCODING=utf-8 \
+    PYTHONUNBUFFERED=1
 #Directorio en donde runea la app, se crea uno nuevo
 WORKDIR /API
 #Copia el archivo con los requerimientos específicamente para que Docker no tenga que volver a instalar todas las dependencias.

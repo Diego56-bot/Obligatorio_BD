@@ -13,7 +13,7 @@ export default function ReservaModal({
                                      }) {
     if (!open) return null;
 
-    const esEditar = isAdmin && modo === "editar" && !!reserva;
+    const esEditar = Boolean(isAdmin && reserva?.id_reserva);
 
     const [salas, setSalas] = useState([]);
     const [turnos, setTurnos] = useState([]);
@@ -21,7 +21,6 @@ export default function ReservaModal({
     const [loadingTurnos, setLoadingTurnos] = useState(false);
     const [error, setError] = useState("");
     const [programas, setProgramas] = useState([]);
-
 
     const [form, setForm] = useState(
         isAdmin
@@ -40,7 +39,7 @@ export default function ReservaModal({
             }
     );
 
-
+    // Edificios para admin
     useEffect(() => {
         if (!open || !isAdmin) return;
 
@@ -56,7 +55,8 @@ export default function ReservaModal({
         loadEdificios();
     }, [open, isAdmin, token]);
 
-
+    // Salas: para admin según edificio seleccionado en el form,
+    // para participante según edificio prop
     useEffect(() => {
         if (!open) return;
 
@@ -65,8 +65,19 @@ export default function ReservaModal({
                 let resp;
 
                 if (isAdmin) {
-                    resp = await apiFetch("/salas/all", { token });
+                    if (!form.edificio) {
+                        setSalas([]);
+                        return;
+                    }
+                    resp = await apiFetch(
+                        `/salas/${encodeURIComponent(form.edificio)}`,
+                        { token }
+                    );
                 } else {
+                    if (!edificio) {
+                        setSalas([]);
+                        return;
+                    }
                     resp = await apiFetch(
                         `/salas/${encodeURIComponent(edificio)}`,
                         { token }
@@ -80,8 +91,9 @@ export default function ReservaModal({
         }
 
         loadSalas();
-    }, [open, edificio, isAdmin, token]);
+    }, [open, edificio, isAdmin, token, form.edificio]);
 
+    // Perfil (para restricciones docente/postgrado)
     useEffect(() => {
         let ignore = false;
         if (!open || !token || isAdmin) return;
@@ -119,9 +131,7 @@ export default function ReservaModal({
         const tipo = (sala.tipo_sala || sala.tipo || "").toLowerCase();
 
         if (!tipo || tipo === "libre") return true;
-
         if (tipo === "docente") return esDocente;
-
         if (tipo === "postgrado") return esDocente || tienePostgrado;
 
         return false;
@@ -132,6 +142,7 @@ export default function ReservaModal({
         [salas, esDocente, tienePostgrado]
     );
 
+    // Turnos: solo cuando hay sala + fecha
     useEffect(() => {
         if (!open) return;
 
@@ -156,32 +167,71 @@ export default function ReservaModal({
         loadTurnos();
     }, [form.sala, form.fecha, form.nombre_sala, isAdmin, token, open]);
 
+    // Prefill al editar (admin)
     useEffect(() => {
         if (!open) return;
 
         if (esEditar && reserva) {
+            const fechaISO = reserva.fecha
+                ? new Date(reserva.fecha).toISOString().slice(0, 10)
+                : "";
+
             setForm({
                 edificio: reserva.edificio,
                 nombre_sala: reserva.nombre_sala,
-                fecha: reserva.fecha?.slice(0, 10),
+                fecha: fechaISO,
                 id_turno: reserva.id_turno,
                 ci_organizador: reserva.ci_organizador,
                 estado: reserva.estado ?? "Activa",
             });
+        } else if (isAdmin && !esEditar) {
+            // reset al crear
+            setForm({
+                edificio: "",
+                nombre_sala: "",
+                fecha: "",
+                id_turno: "",
+                ci_organizador: "",
+                estado: "Activa",
+            });
+        } else if (!isAdmin) {
+            // reset participante
+            setForm({
+                sala: "",
+                fecha: "",
+                turno: "",
+            });
         }
-    }, [open, esEditar, reserva]);
+        setError("");
+    }, [open, esEditar, reserva, isAdmin]);
 
+    // Guardar (admin)
     async function handleAdminSave() {
         setError("");
+
+        const ciFinal = form.ci_organizador || reserva?.ci_organizador;
+
+        if (
+            !form.edificio ||
+            !form.nombre_sala ||
+            !form.fecha ||
+            !form.id_turno ||
+            !ciFinal
+        ) {
+            setError("Todos los campos son obligatorios.");
+            return;
+        }
 
         const body = {
             nombre_sala: form.nombre_sala,
             edificio: form.edificio,
             fecha: form.fecha,
             id_turno: form.id_turno,
-            ci: form.ci_organizador,
+            ci: ciFinal,
             estado: form.estado,
         };
+
+        console.log("Body que se envía a reservas:", body, "esEditar:", esEditar);
 
         try {
             if (esEditar) {
@@ -201,10 +251,12 @@ export default function ReservaModal({
             onClose();
             await onConfirm?.();
         } catch (err) {
-            setError("Error al guardar reserva.");
+            console.error("Error al guardar reserva (admin):", err);
+            setError(err?.message || "Error al guardar reserva.");
         }
     }
 
+    // ====== MODAL ADMIN ======
     if (isAdmin) {
         return (
             <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
@@ -222,7 +274,8 @@ export default function ReservaModal({
                             value={form.edificio}
                             onChange={(e) =>
                                 setForm((f) => ({ ...f, edificio: e.target.value }))
-                            }>
+                            }
+                        >
                             <option value="">Seleccionar edificio…</option>
                             {edificios.map((ed) => (
                                 <option
@@ -242,7 +295,8 @@ export default function ReservaModal({
                             value={form.nombre_sala}
                             onChange={(e) =>
                                 setForm((f) => ({ ...f, nombre_sala: e.target.value }))
-                            }>
+                            }
+                        >
                             <option value="">Seleccionar sala…</option>
                             {salas.map((s) => (
                                 <option key={s.nombre_sala} value={s.nombre_sala}>
@@ -320,7 +374,7 @@ export default function ReservaModal({
                         </label>
                     )}
 
-                    {error && <p className="text-red-600">{error}</p>}
+                    {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
 
                     <div className="mt-4 flex justify-end gap-2">
                         <button
@@ -341,7 +395,7 @@ export default function ReservaModal({
         );
     }
 
-
+    // ====== MODAL PARTICIPANTE ======
     return (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
             <div className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-xl">

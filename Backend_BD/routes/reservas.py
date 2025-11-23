@@ -62,7 +62,7 @@ def reservaEspecifica(id):
 #Añadir una reserva
 @reservas_bp.route('/registrar', methods=['POST'])
 @verificar_token
-@requiere_rol('Participante')
+@requiere_rol('Participante', 'Funcionario', 'Administrador')
 def aniadirReserva():
 
     conection = get_connection()
@@ -192,10 +192,16 @@ def invitarParticipante():
 
         validate_reserva_participante_fecha(fecha_solicitud)
 
-        cursor.execute("SELECT ci FROM usuario WHERE email = %s", (email_invitado,))
+        cursor.execute("SELECT ci, rol FROM usuario WHERE email = %s", (email_invitado,))
         invitado = cursor.fetchone()
         if not invitado:
             return jsonify({'error': 'No existe un usuario con ese email'}), 404
+
+        if invitado["rol"] in ("Administrador", "Funcionario"):
+            return jsonify({
+                'error': 'Sólo se pueden invitar usuarios con rol Participante'
+            }), 400
+
         ci_invitado = invitado["ci"]
         if not validar_ci(ci_invitado):
             return jsonify({'error': 'CI del invitado inválida'}), 400
@@ -252,6 +258,7 @@ def modificarReserva(id):
     conection = get_connection()
     cursor = conection.cursor()
     data = request.get_json()
+
     nombre_sala = data.get("nombre_sala")
     edificio = data.get("edificio")
     fecha = data.get("fecha")
@@ -259,23 +266,47 @@ def modificarReserva(id):
     estado = data.get("estado")
 
     try:
-        if fecha: validate_reserva_fecha(fecha)
+        if fecha:
+            validate_reserva_fecha(fecha)
+
+        # Solo chequeamos solapamiento si tenemos todos los datos
         if all([nombre_sala, edificio, fecha, id_turno]):
-            ensure_no_solapamiento_de_reserva(conection, nombre_sala, edificio, fecha, id_turno)
+            cur_check = conection.cursor()
+            cur_check.execute("""
+                SELECT 1
+                FROM reserva
+                WHERE nombre_sala = %s
+                  AND edificio    = %s
+                  AND fecha       = %s
+                  AND id_turno    = %s
+                  AND id_reserva <> %s
+                LIMIT 1
+            """, (nombre_sala, edificio, fecha, id_turno, id))
+            if cur_check.fetchone():
+                cur_check.close()
+                return jsonify({'error': 'Ya existe una reserva para esa sala, fecha y turno.'}), 400
+            cur_check.close()
 
         cursor.execute("""
-                       UPDATE reserva
-                       SET nombre_sala = %s,
-                           edificio    = %s,
-                           fecha       = %s,
-                           id_turno    = %s,
-                           estado      = %s
-                       WHERE id_reserva = %s
-                       """, (nombre_sala, edificio, fecha, id_turno, estado, id))
+            UPDATE reserva
+               SET nombre_sala = %s,
+                   edificio    = %s,
+                   fecha       = %s,
+                   id_turno    = %s,
+                   estado      = %s
+             WHERE id_reserva  = %s
+        """, (nombre_sala, edificio, fecha, id_turno, estado, id))
+
         conection.commit()
+
         if cursor.rowcount == 0:
             return jsonify({'mensaje': 'Reserva no encontrada'}), 404
+
         return jsonify({'mensaje': 'Reserva modificada correctamente'}), 200
+
+    except ValueError as ve:
+        conection.rollback()
+        return jsonify({'error': str(ve)}), 400
     except Exception as e:
         conection.rollback()
         return jsonify({'error': str(e)}), 500
