@@ -1,14 +1,13 @@
 DROP DATABASE IF EXISTS Obligatorio;
 CREATE DATABASE Obligatorio;
 USE Obligatorio;
-
 SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 SET character_set_connection = utf8mb4;
 SET character_set_results = utf8mb4;
 
 CREATE TABLE usuario (
-                         ci INT PRIMARY KEY ,
+                         ci INT,
                          nombre VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(nombre) >= 3),
                          apellido VARCHAR(32) NOT NULL CHECK (CHAR_LENGTH(apellido) >= 3),
                          email VARCHAR(50) UNIQUE CHECK (
@@ -16,7 +15,8 @@ CREATE TABLE usuario (
                                  OR LOWER(email) LIKE '%@ucu.edu.uy'
                              ),
                          rol ENUM('Participante', 'Funcionario', 'Administrador') NOT NULL DEFAULT 'Participante',
-                         activo BOOLEAN NOT NULL DEFAULT TRUE
+                         activo BOOLEAN NOT NULL DEFAULT TRUE,
+                         PRIMARY KEY (ci, email)
 );
 
 CREATE TABLE login(
@@ -122,17 +122,23 @@ CREATE TABLE resena (
 );
 
 INSERT INTO usuario (ci, nombre, apellido, email, rol)
-VALUES(55574121, 'Facundo', 'Piriz','facundo.piriz@correo.ucu.edu.uy','Administrador'),
-      (56901393, 'Diego', 'De Olivera','diego.deoliveira@correo.ucu.edu.uy','Funcionario'),
-      (55992757, 'Agustín', 'García','agustin.garciab@correo.ucu.edu.uy','Participante'),
-      (10000008, 'Thiago','García','thiago.garcia@correo.ucu.edu.uy','Participante'),
-      (10000014, 'Santiago','Aguerre','santiago.aguerre@correo.ucu.edu.uy','Participante'),
-      (10000020, 'Agostina','Etchebarren','agostina.etchebarren@correo.ucu.edu.uy','Participante'),
-      (10000036, 'Constanza','Blanco','constanza.blanco@correo.ucu.edu.uy','Funcionario'),
-      (10000042, 'Manuel','Cabrera','manuel.cabrera@correo.ucu.edu.uy','Funcionario'),
-      (10000058, 'Martin','Mujica','martin.mujica@correo.ucu.edu.uy','Administrador'),
-      (10000064, 'Santiago','Blanco','santiago.blanco@correo.ucu.edu.uy','Administrador'),
-      (10000070, 'Felipe','Paladino','felipe.paladino@correo.ucu.edu.uy','Administrador');
+VALUES
+    (55574121, 'Facundo', 'Piriz','facundo.piriz@correo.ucu.edu.uy','Administrador'),
+    (56901393, 'Diego', 'De Olivera','diego.deoliveira@correo.ucu.edu.uy','Funcionario'),
+    (55992757, 'Agustín', 'García','agustin.garciab@correo.ucu.edu.uy','Participante'),
+    (10000008, 'Thiago','García','thiago.garcia@correo.ucu.edu.uy','Participante'),
+    (10000014, 'Santiago','Aguerre','santiago.aguerre@correo.ucu.edu.uy','Participante'),
+    (10000020, 'Agostina','Etchebarren','agostina.etchebarren@correo.ucu.edu.uy','Participante'),
+    (10000036, 'Constanza','Blanco','constanza.blanco@correo.ucu.edu.uy','Funcionario'),
+    (10000042, 'Manuel','Cabrera','manuel.cabrera@correo.ucu.edu.uy','Funcionario'),
+    (10000058, 'Martin','Mujica','martin.mujica@correo.ucu.edu.uy','Administrador'),
+    (10000064, 'Santiago','Blanco','santiago.blanco@correo.ucu.edu.uy','Administrador'),
+    (10000070, 'Felipe','Paladino','felipe.paladino@correo.ucu.edu.uy','Participante'),
+    (10010089, 'Lucio', 'Fernandez','lucio.fernandez@correo.ucu.edu.uy','Participante'),
+    (10020082, 'María', 'Lopez','maria.lopez@correo.ucu.edu.uy','Participante'),
+    (10040094, 'Valentina', 'Martinez','valentina.martinez@correo.ucu.edu.uy','Participante'),
+    (10030091, 'Rodrigo', 'Gonzalez','rodrigo.gonzalez@correo.ucu.edu.uy','Participante'),
+    (10050100, 'Camila', 'Santos','camila.santos@correo.ucu.edu.uy','Participante');
 
 INSERT INTO login (email, contrasena) VALUES
                                           ('facundo.piriz@correo.ucu.edu.uy', '$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
@@ -145,7 +151,12 @@ INSERT INTO login (email, contrasena) VALUES
                                           ('martin.mujica@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
                                           ('santiago.blanco@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
                                           ('felipe.paladino@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
-                                          ('agustin.garciab@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2');
+                                          ('agustin.garciab@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
+                                          ('lucio.fernandez@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
+                                          ('maria.lopez@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
+                                          ('valentina.martinez@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
+                                          ('rodrigo.gonzalez@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2'),
+                                          ('camila.santos@correo.ucu.edu.uy','$2b$12$c2kgM37h6ri1RGeroGPsMOZoZJwXLMyKYhLkhtmMWJRkKQXdh1ey2');
 
 INSERT INTO facultad (nombre_facultad) VALUES
                                            ('Ingeniería y Tecnologías'),
@@ -239,18 +250,23 @@ INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador) VAL
                                                                                  ('Sala SJ 1',    'Edificio San José',    '2025-12-05', 5, 10000008),
                                                                                  ('Sala Sal1',    'Campus Salto',         '2025-12-06', 6, 10000014),
                                                                                  ('Sala C1',      'Edificio Candelaria',  '2025-12-07', 7, 10000020),
-                                                                                 ('Sala SF1',     'San Fernando',         '2025-12-08', 8, 55992757);
+                                                                                 ('Sala SF1',     'San Fernando',         '2025-12-08', 8, 55992757),
+                                                                                 ('Sala 3', 'Edificio Sacré Coeur', '2025-12-09', 2, 10010089),
+                                                                                 ('Sala 5', 'Edificio Sacré Coeur', '2025-12-10', 3, 10020082),
+                                                                                 ('Sala S3', 'Edificio Semprún', '2025-12-11', 4, 10040094),
+                                                                                 ('Sala Mullin 2', 'Edificio Mullin', '2025-12-12', 5, 10030091),
+                                                                                 ('Sala San Ignacio A', 'Edificio San Ignacio', '2025-12-13', 6, 10050100);
+
 
 
 INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador, estado) VALUES
-                                                                                         ('Sala 1',              'Edificio Sacré Coeur', '2025-11-10', 1, 55992757, 'Finalizada'),
-                                                                                         ('Sala S2',             'Edificio Semprún',     '2025-10-05', 2, 10000020, 'Finalizada'),
-                                                                                         ('Sala Athanasius 2B',  'Edificio Athanasius',  '2025-11-15', 3, 55992757, 'Cancelada'),
-                                                                                         ('Sala Madre Marta 1',  'Edificio Madre Marta', '2025-12-10', 4, 10000020, 'Cancelada');
+                                                                                         ('Sala 1',              'Edificio Sacré Coeur', '2025-12-10', 1, 55992757, 'Finalizada'),
+                                                                                         ('Sala S2',             'Edificio Semprún',     '2025-11-05', 2, 10000020, 'Finalizada'),
+                                                                                         ('Sala Athanasius 2B',  'Edificio Athanasius',  '2026-01-02', 3, 55992757, 'Cancelada'),
+                                                                                         ('Sala Madre Marta 1',  'Edificio Madre Marta', '2025-12-08', 4, 10000020, 'Cancelada'),
+                                                                                         ('Sala Mullin 3', 'Edificio Mullin', '2025-12-12', 5, 10000014, 'Finalizada'),
+                                                                                         ('Sala San Ignacio B', 'Edificio San Ignacio', '2025-12-15', 6, 10000008, 'Cancelada');
 
-
-INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES
-    (55992757, 9, 'Asiste', 'Confirmado', FALSE);
 
 INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES
                                                                                                       (55992757, 1, 'Asiste',    'Confirmado', TRUE),
@@ -280,21 +296,29 @@ INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confir
                                                                                                       (55992757, 8, 'Asiste',    'Confirmado', FALSE),
                                                                                                       (10000008, 8, 'Asiste',    'Confirmado', FALSE),
                                                                                                       (10000014, 8, 'No asiste', 'Pendiente',  FALSE),
+                                                                                                      (55992757, 9, 'Asiste', 'Confirmado', FALSE),
 
                                                                                                       (10000020, 10, 'Asiste',   'Confirmado', FALSE),
 
                                                                                                       (10000014, 11, 'No asiste','Confirmado', FALSE),
 
-                                                                                                      (10000008, 12, 'Asiste',   'Pendiente',  FALSE);
+                                                                                                      (10000008, 12, 'Asiste',   'Pendiente',  FALSE),
+                                                                                                      (10010089, 13, 'Asiste', 'Confirmado', FALSE),
+                                                                                                      (10020082, 13, 'Asiste', 'Pendiente', FALSE),
+                                                                                                      (10020082, 14, 'Asiste', 'Confirmado', TRUE),
+                                                                                                      (10040094, 15, 'No asiste', 'Rechazado', FALSE),
+                                                                                                      (10030091, 16, 'Asiste', 'Confirmado', FALSE),
+                                                                                                      (10050100, 16, 'Asiste', 'Confirmado', FALSE);
+
+
 
 INSERT INTO sancion_participante (ci_participante, motivo, fecha_inicio, fecha_fin) VALUES
                                                                                         (10000014, 'Inasistencia', '2025-11-22', '2026-01-22'),
-                                                                                        (55992757, 'Inasistencia', '2025-11-21', '2026-01-21'),
-
-                                                                                        (10000020, 'Inasistencia', '2025-11-10', '2026-1-10'),
-
-                                                                                        (55992757, 'Uso indebido', '2025-11-22', '2025-12-06'),
-                                                                                        (10000008, 'Morosidad',    '2025-11-22', '2025-12-06');
+                                                                                        (10000008, 'Inasistencia',    '2025-11-22', '2026-01-22'),
+                                                                                        (10000020, 'Inasistencia', '2025-11-22', '2026-1-22'),
+                                                                                        (10010089, 'Vandalismo', '2025-12-07', '2025-12-21'),
+                                                                                        (10020082, 'Morosidad', '2025-12-08', '2025-12-22'),
+                                                                                        (10050100, 'Morosidad', '2025-12-06', '2026-12-18');
 
 INSERT INTO resena (id_reserva, ci_participante, puntaje_general, descripcion)
 VALUES
@@ -303,6 +327,12 @@ VALUES
     (10, 55992757, 5, 'Muy buena iluminación y espacio'),
     (10, 10000008, 4, 'Sala cómoda, pero la computadora tenía fallas');
 
+
+DROP USER IF EXISTS 'ucurooms_app'@'%';
+DROP USER IF EXISTS 'ucurooms_participante'@'%';
+DROP USER IF EXISTS 'ucurooms_funcionario'@'%';
+DROP USER IF EXISTS 'ucurooms_admin'@'%';
+DROP USER IF EXISTS 'ucurooms_login'@'%';
 
 CREATE USER 'ucurooms_login'@'%' IDENTIFIED BY 'login_pass';
 GRANT SELECT ON Obligatorio.usuario TO 'ucurooms_login'@'%';
@@ -314,12 +344,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_app'@'%';
 CREATE USER 'ucurooms_participante'@'%' IDENTIFIED BY 'participante_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
-GRANT INSERT, UPDATE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
+GRANT INSERT ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
 GRANT INSERT ON Obligatorio.resena TO 'ucurooms_participante'@'%';
 GRANT UPDATE (puntaje) ON Obligatorio.salasDeEstudio TO 'ucurooms_participante'@'%';
 GRANT UPDATE ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
 GRANT UPDATE, DELETE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
-GRANT UPDATE ON Obligatorio.login  TO 'ucurooms_participante'@'%';
 
 CREATE USER 'ucurooms_funcionario'@'%' IDENTIFIED BY 'funcionario_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_funcionario'@'%';
