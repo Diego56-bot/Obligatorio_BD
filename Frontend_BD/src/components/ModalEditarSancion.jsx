@@ -1,26 +1,46 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
 
-export default function ModalEditarSancion({open, onClose, sancion, titulo, token, onConfirm}) {
+function formatDateForInput(fecha) {
+    if (!fecha) return "";
+    const d = new Date(fecha);
 
-    if (!open) return null;
+    if (Number.isNaN(d.getTime())) {
+        console.warn("Fecha inválida recibida en sanción:", fecha);
+        return "";
+    }
 
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+export default function ModalEditarSancion({
+                                               open,
+                                               onClose,
+                                               sancion,
+                                               titulo,
+                                               token,
+                                               onConfirm,
+                                           }) {
     const [ci, setCi] = useState("");
     const [motivo, setMotivo] = useState("");
     const [inicio, setInicio] = useState("");
     const [fin, setFin] = useState("");
     const [error, setError] = useState("");
 
-
-    // Cuando abre modal cargar datos si es edición, o limpiar si es nuevo
     useEffect(() => {
         setError("");
 
+        if (!open) return;
+
         if (sancion) {
-            setCi(sancion.ci_participante);
-            setMotivo(sancion.motivo);
-            setInicio(sancion.fecha_inicio);
-            setFin(sancion.fecha_fin);
+            setCi(sancion.ci_participante ?? "");
+            setMotivo(sancion.motivo ?? "Uso indebido");
+            setInicio(formatDateForInput(sancion.fecha_inicio));
+            setFin(formatDateForInput(sancion.fecha_fin));
         } else {
             setCi("");
             setMotivo("Uso indebido");
@@ -30,39 +50,31 @@ export default function ModalEditarSancion({open, onClose, sancion, titulo, toke
     }, [sancion, open]);
 
     async function handleSave() {
-
         try {
+            const body = {
+                ci_participante: ci,
+                motivo,
+                fecha_inicio: inicio,
+                fecha_fin: fin,
+            };
+
             if (sancion) {
-                // Editar sancion
                 await apiFetch(`/sanciones/modificar/${sancion.id_sancion}`, {
                     method: "PUT",
                     token,
-                    body: {
-                        ci_participante: ci,
-                        motivo,
-                        fecha_inicio: inicio,
-                        fecha_fin: fin,
-                    },
+                    body,
                 });
             } else {
-                // Agregar sanción
                 await apiFetch(`/sanciones/registrar`, {
                     method: "POST",
                     token,
-                    body: {
-                        ci_participante: ci,
-                        motivo,
-                        fecha_inicio: inicio,
-                        fecha_fin: fin,
-                    },
+                    body,
                 });
             }
 
             onClose();
             await onConfirm();
-
-            // Setear el tipo de error
-        }catch (err) {
+        } catch (err) {
             console.error("Hubo un error :( ", err);
 
             let mensaje = "";
@@ -76,32 +88,27 @@ export default function ModalEditarSancion({open, onClose, sancion, titulo, toke
 
             if (mensaje.includes("cédula inválida") || mensaje.includes("cedula invalida")) {
                 setError("Cédula inválida");
-            }
-            else if (mensaje.includes("ya tiene una sanción") || mensaje.includes("activa")) {
+            } else if (mensaje.includes("ya tiene una sanción") || mensaje.includes("activa")) {
                 setError("El participante ya está sancionado en esa fecha");
-            }
-            else if (mensaje.includes("faltan datos")) {
+            } else if (mensaje.includes("faltan datos")) {
                 setError("Faltan datos requeridos");
-            }
-            else if (mensaje.includes("fecha de fin") || mensaje.includes("posterior a la de inicio")) {
+            } else if (
+                mensaje.includes("fecha de fin") ||
+                mensaje.includes("posterior a la de inicio")
+            ) {
                 setError("La fecha de fin debe ser posterior a la de inicio");
-            }
-            else {
+            } else {
                 setError("Error al procesar la sanción");
             }
         }
-
-
-
     }
+
+    if (!open) return null;
 
     return (
         <div className="fixed inset-0 z-50 grid place-items-center bg-gray-900/20 backdrop-blur-sm p-4">
             <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
-
-                <h2 className="text-xl font-semibold text-blue-800">
-                    {titulo}
-                </h2>
+                <h2 className="text-xl font-semibold text-blue-800">{titulo}</h2>
 
                 <div className="mt-4 space-y-3">
                     <div>
@@ -112,7 +119,9 @@ export default function ModalEditarSancion({open, onClose, sancion, titulo, toke
                             pattern="[0-9]*"
                             className="w-full border px-2 py-1 rounded"
                             value={ci}
-                            onChange={(e) => setCi(e.target.value.replace(/\D/g, ""))}
+                            onChange={(e) =>
+                                setCi(e.target.value.replace(/\D/g, ""))
+                            }
                         />
                     </div>
 
@@ -149,6 +158,7 @@ export default function ModalEditarSancion({open, onClose, sancion, titulo, toke
                             onChange={(e) => setFin(e.target.value)}
                         />
                     </div>
+
                     {error && (
                         <p className="text-red-600 text-sm font-semibold mt-2">
                             {error}
@@ -171,7 +181,6 @@ export default function ModalEditarSancion({open, onClose, sancion, titulo, toke
                         Guardar
                     </button>
                 </div>
-
             </div>
         </div>
     );

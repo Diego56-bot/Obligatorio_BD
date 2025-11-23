@@ -7,7 +7,6 @@ def _to_time(value):
         return value
 
     if isinstance(value, timedelta):
-        # sumamos al día mínimo y sacamos solo la hora
         return (datetime.min + value).time()
 
     if isinstance(value, str):

@@ -12,7 +12,7 @@ from validators import (
     ensure_capacidad_no_superada,
     ensure_reglas_usuario,
     validar_ci,
-    es_organizador
+    es_organizador, validate_sancion_dates
 )
 from datetime import date as _date
 from datetime import timedelta
@@ -742,6 +742,169 @@ def reservas_para_resenar():
         return jsonify(filas), 200
     except Exception as e:
         print("ERROR en /reservas/para-resenar:", e)
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        con.close()
+
+@reservas_bp.route('/sin-asistencia/<int:id_reserva>', methods=['POST'])
+@verificar_token
+@requiere_rol('Administrador', 'Funcionario')
+def marcar_reserva_sin_asistencia(id_reserva):
+    con = get_connection()
+    cur = con.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT estado FROM reserva WHERE id_reserva = %s", (id_reserva,))
+        reserva = cur.fetchone()
+        if not reserva:
+            return jsonify({"error": "Reserva no encontrada"}), 404
+
+        cur.execute("""
+            SELECT ci_participante, confirmacion, asistencia
+              FROM reservaParticipante
+             WHERE id_reserva = %s
+        """, (id_reserva,))
+        participantes = cur.fetchall()
+
+        if not participantes:
+            return jsonify({"error": "La reserva no tiene participantes"}), 400
+
+        a_sancionar = [
+            p for p in participantes
+            if (p["confirmacion"] == "Confirmado" and (p["asistencia"] or "").lower() == "no asiste")
+        ]
+
+        if not a_sancionar:
+            return jsonify({
+                "error": "No hay participantes confirmados marcados como 'No asiste' para sancionar"
+            }), 400
+
+        cur2 = con.cursor()
+        cur2.execute("""
+            UPDATE reserva
+               SET estado = 'Sin asistencia'
+             WHERE id_reserva = %s
+        """, (id_reserva,))
+        if cur2.rowcount == 0:
+            con.rollback()
+            return jsonify({"error": "Reserva no encontrada al actualizar estado"}), 404
+
+        hoy = _date.today()
+        fecha_inicio = hoy.strftime("%Y-%m-%d")
+        fecha_fin = (hoy + timedelta(days=60)).strftime("%Y-%m-%d")  # 7 días de sanción
+
+        try:
+            validate_sancion_dates(fecha_inicio, fecha_fin)
+        except ValueError as ve:
+            con.rollback()
+            return jsonify({"error": str(ve)}), 400
+
+        creadas = 0
+        saltadas_por_sancion_activa = 0
+
+        for p in a_sancionar:
+            ci_p = p["ci_participante"]
+
+            motivo = "Inasistencia"
+            cur_sanc = con.cursor()
+            cur_sanc.execute("""
+                INSERT INTO sancion_participante (ci_participante, motivo, fecha_inicio, fecha_fin)
+                VALUES (%s, %s, %s, %s)
+            """, (ci_p, motivo, fecha_inicio, fecha_fin))
+            creadas += 1
+
+        con.commit()
+
+        return jsonify({
+            "mensaje": "Reserva marcada como 'Sin asistencia'. Sanciones aplicadas.",
+            "sanciones_creadas": creadas,
+            "omitidos_por_sancion_activa": saltadas_por_sancion_activa
+        }), 200
+
+    except Exception as e:
+        con.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        con.close()
+
+@reservas_bp.route('/participante/<int:id_reserva>/<int:ci_participante>/asistencia', methods=['PATCH'])
+@verificar_token
+@requiere_rol('Administrador', 'Funcionario')
+def actualizar_asistencia_participante(id_reserva, ci_participante):
+    data = request.get_json(silent=True)
+    if isinstance(data, dict):
+        asistencia_raw = data.get("asistencia")
+    elif isinstance(data, str):
+        asistencia_raw = data
+    else:
+        asistencia_raw = None
+
+    asistencia = (asistencia_raw or "").strip().capitalize()
+    if asistencia not in ("Asiste", "No asiste"):
+        return jsonify({"error": "El campo 'asistencia' debe ser 'Asiste' o 'No asiste'"}), 400
+
+    con = get_connection()
+    cur = con.cursor()
+    try:
+        cur.execute("SELECT 1 FROM reserva WHERE id_reserva = %s", (id_reserva,))
+        if not cur.fetchone():
+            return jsonify({"error": "Reserva no encontrada"}), 404
+
+        cur.execute("""
+            UPDATE reservaParticipante
+               SET asistencia = %s
+             WHERE id_reserva = %s
+               AND ci_participante = %s
+        """, (asistencia, id_reserva, ci_participante))
+        con.commit()
+
+        if cur.rowcount == 0:
+            return jsonify({"error": "Participante no encontrado en esta reserva"}), 404
+
+        return jsonify({"mensaje": "Asistencia actualizada correctamente"}), 200
+
+    except Exception as e:
+        con.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+        con.close()
+
+
+@reservas_bp.route('/participante/<int:id_reserva>/<int:ci_participante>', methods=['DELETE'])
+@verificar_token
+@requiere_rol('Administrador', 'Funcionario')
+def eliminar_participante_reserva(id_reserva, ci_participante):
+    con = get_connection()
+    cur = con.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT ci_organizador FROM reserva WHERE id_reserva = %s", (id_reserva,))
+        row = cur.fetchone()
+        if not row:
+            return jsonify({"error": "Reserva no encontrada"}), 404
+
+        ci_organizador = int(row["ci_organizador"])
+        ci_participante_int = int(ci_participante)
+
+        if ci_participante_int == ci_organizador:
+            return jsonify({"error": "No se puede eliminar al organizador de la reserva"}), 400
+
+        cur2 = con.cursor()
+        cur2.execute("""
+            DELETE FROM reservaParticipante
+             WHERE id_reserva = %s
+               AND ci_participante = %s
+        """, (id_reserva, ci_participante))
+        con.commit()
+
+        if cur2.rowcount == 0:
+            return jsonify({"error": "Participante no encontrado en esta reserva"}), 404
+
+        return jsonify({"mensaje": "Participante eliminado correctamente"}), 200
+
+    except Exception as e:
+        con.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
