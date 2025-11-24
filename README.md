@@ -26,5 +26,5 @@ Y el mail varía dependiendo del usuario. A continuación, ejemplos para cada ro
 ### Inicio y cierre de sesión
 Una vez iniciado sesión, es posible usar todas las funcionalidades. Para cerrar sesión se puede presionar el botón de “cerrar sesión” 
 
-Repo original de Frontend: https://github.com/FacundoPiriz17/Frontend_BD
+Repo original de Frontend: https://github.com/FacundoPiriz17/Frontend_BD <br>
 Repo original de Backend: https://github.com/FacundoPiriz17/Backend_BD
