@@ -31,7 +31,7 @@ export default function ReseniasPage() {
         console.error("Fallo /resenas/all:", err);
         if (!ignore) setResenias([]);
       } finally {
-        setLoading(true);
+        setLoading(false);
       }
     }
 
