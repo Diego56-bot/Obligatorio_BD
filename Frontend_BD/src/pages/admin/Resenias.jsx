@@ -59,9 +59,8 @@ export default function ReseniasPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-100 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-800 mx-auto mb-4">
-            <p className="text-xl text-blue-800">Cargando Reseñas...</p>
-          </div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-800 mx-auto mb-4"></div>
+          <p className="text-xl text-blue-800">Cargando Reseñas...</p>
         </div>
       </div>
     );
