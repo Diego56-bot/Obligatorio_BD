@@ -376,6 +376,8 @@ GRANT INSERT ON Obligatorio.resena TO 'ucurooms_participante'@'%';
 GRANT UPDATE (puntaje) ON Obligatorio.salasDeEstudio TO 'ucurooms_participante'@'%';
 GRANT UPDATE ON Obligatorio.reserva TO 'ucurooms_participante'@'%';
 GRANT UPDATE, DELETE ON Obligatorio.reservaParticipante TO 'ucurooms_participante'@'%';
+GRANT UPDATE  ON Obligatorio.login TO 'ucurooms_participante'@'%';
+
 
 CREATE USER 'ucurooms_funcionario'@'%' IDENTIFIED BY 'funcionario_pass';
 GRANT SELECT ON Obligatorio.* TO 'ucurooms_funcionario'@'%';
@@ -383,6 +385,8 @@ GRANT INSERT, UPDATE, DELETE ON Obligatorio.reserva TO 'ucurooms_funcionario'@'%
 GRANT INSERT, UPDATE, DELETE ON Obligatorio.reservaParticipante TO 'ucurooms_funcionario'@'%';
 GRANT INSERT, UPDATE, DELETE ON Obligatorio.sancion_participante TO 'ucurooms_funcionario'@'%';
 GRANT INSERT, UPDATE, DELETE ON Obligatorio.resena TO 'ucurooms_funcionario'@'%';
+GRANT UPDATE  ON Obligatorio.login TO 'ucurooms_funcionario'@'%';
+
 
 CREATE USER 'ucurooms_admin'@'%' IDENTIFIED BY 'admin_pass';
 GRANT SELECT, INSERT, UPDATE, DELETE ON Obligatorio.* TO 'ucurooms_admin'@'%';
