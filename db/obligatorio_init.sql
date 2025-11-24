@@ -166,20 +166,26 @@ INSERT INTO facultad (nombre_facultad) VALUES
 
 INSERT INTO planAcademico (nombre_plan, id_Facultad, tipo) VALUES
                                                                ('Ingeniería en Informática 2021', 1, 'Grado'),
-                                                               ('Maestría en Informática 2021', 1, 'Grado'),
+                                                               ('Maestría en Informática 2021', 1, 'Posgrado'),
                                                                ('Administración de Empresas 2020', 2, 'Grado'),
                                                                ('Psicología Clínica 2019', 4, 'Grado'),
                                                                ('Dirección Avanzada de Empresas 2010', 3, 'Posgrado'),
-                                                               ('Ingeniería en Electrónica 2022',1, 'Grado'),
-                                                               ('Maestría en Dirección de Empresas 2022',3, 'Posgrado'),
-                                                               ('Psicología Organizacional 2022',4, 'Posgrado');
+                                                               ('Ingeniería en Electrónica 2022', 1, 'Grado'),
+                                                               ('Maestría en Dirección de Empresas 2022', 3, 'Posgrado'),
+                                                               ('Psicología Organizacional 2022', 4, 'Posgrado');
+
 
 INSERT INTO participanteProgramaAcademico (ci_participante, nombre_plan, rol) VALUES
-                                                                                  (55992757, 'Ingeniería en Informática 2021', 'Docente'),
-                                                                                  (10000020, 'Ingeniería en Informática 2021',         'Alumno'),
-                                                                                  (10000014, 'Ingeniería en Informática 2021',         'Alumno'),
-                                                                                  (10000008, 'Maestría en Informática 2021',           'Docente');
-
+                                                                                  (55992757, 'Ingeniería en Informática 2021',        'Docente'),
+                                                                                  (10000020, 'Ingeniería en Informática 2021',        'Alumno'),
+                                                                                  (10000014, 'Ingeniería en Informática 2021',        'Alumno'),
+                                                                                  (10000008, 'Maestría en Informática 2021',          'Docente'),
+                                                                                  (10000070, 'Administración de Empresas 2020',       'Alumno'),
+                                                                                  (10010089, 'Ingeniería en Informática 2021',        'Alumno'),
+                                                                                  (10020082, 'Psicología Clínica 2019',               'Alumno'),
+                                                                                  (10040094, 'Psicología Organizacional 2022',        'Alumno'),
+                                                                                  (10030091, 'Ingeniería en Electrónica 2022',        'Alumno'),
+                                                                                  (10050100, 'Maestría en Dirección de Empresas 2022','Alumno');
 
 INSERT INTO edificio (nombre_edificio, direccion, campus) VALUES
                                                               ('Edificio Sacré Coeur','Av. 8 de Octubre 2738','Montevideo'),
@@ -242,88 +248,109 @@ INSERT INTO turno (hora_inicio, hora_fin) VALUES
                                               ('22:00:00', '23:00:00');
 
 
-INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador) VALUES
-                                                                                 ('Sala 1',       'Edificio Sacré Coeur', '2025-12-01', 1, 55992757),
-                                                                                 ('Sala 2',       'Edificio Sacré Coeur', '2025-12-02', 2, 10000020),
-                                                                                 ('Sala S1',      'Edificio Semprún',     '2025-12-03', 3, 10000014),
-                                                                                 ('Sala Mullin 1','Edificio Mullin',      '2025-12-04', 4, 55992757),
-                                                                                 ('Sala SJ 1',    'Edificio San José',    '2025-12-05', 5, 10000008),
-                                                                                 ('Sala Sal1',    'Campus Salto',         '2025-12-06', 6, 10000014),
-                                                                                 ('Sala C1',      'Edificio Candelaria',  '2025-12-07', 7, 10000020),
-                                                                                 ('Sala SF1',     'San Fernando',         '2025-12-08', 8, 55992757),
-                                                                                 ('Sala 3', 'Edificio Sacré Coeur', '2025-12-09', 2, 10010089),
-                                                                                 ('Sala 5', 'Edificio Sacré Coeur', '2025-12-10', 3, 10020082),
-                                                                                 ('Sala S3', 'Edificio Semprún', '2025-12-11', 4, 10040094),
-                                                                                 ('Sala Mullin 2', 'Edificio Mullin', '2025-12-12', 5, 10030091),
-                                                                                 ('Sala San Ignacio A', 'Edificio San Ignacio', '2025-12-13', 6, 10050100);
-
-
+INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador, estado) VALUES
+                                                                                         ('Sala 1',        'Edificio Sacré Coeur', '2025-12-01', 1, 55992757, 'Cancelada'),
+                                                                                         ('Sala 2',        'Edificio Sacré Coeur', '2025-12-02', 2, 10000020, 'Cancelada'),
+                                                                                         ('Sala S1',       'Edificio Semprún',     '2025-12-03', 3, 10000014, 'Cancelada'),
+                                                                                         ('Sala Mullin 1', 'Edificio Mullin',      '2025-12-04', 4, 55992757, 'Cancelada'),
+                                                                                         ('Sala SJ 1',     'Edificio San José',    '2025-12-05', 5, 10000008, 'Cancelada'),
+                                                                                         ('Sala Sal1',     'Campus Salto',         '2025-12-06', 6, 10000014, 'Activa'),
+                                                                                         ('Sala C1',       'Edificio Candelaria',  '2025-12-07', 7, 10000020, 'Activa'),
+                                                                                         ('Sala SF1',      'San Fernando',         '2025-12-08', 8, 55992757, 'Activa'),
+                                                                                         ('Sala 3',        'Edificio Sacré Coeur', '2025-12-09', 2, 10010089, 'Activa'),
+                                                                                         ('Sala 5',        'Edificio Sacré Coeur', '2025-12-10', 3, 10020082, 'Activa'),
+                                                                                         ('Sala S3',       'Edificio Semprún',     '2025-12-11', 4, 10040094, 'Activa'),
+                                                                                         ('Sala Mullin 2', 'Edificio Mullin',      '2025-12-12', 5, 10030091, 'Activa'),
+                                                                                         ('Sala San Ignacio A', 'Edificio San Ignacio', '2025-12-13', 6, 10050100, 'Activa');
 
 INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci_organizador, estado) VALUES
-                                                                                         ('Sala 1',              'Edificio Sacré Coeur', '2025-12-10', 1, 55992757, 'Finalizada'),
-                                                                                         ('Sala S2',             'Edificio Semprún',     '2025-11-05', 2, 10000020, 'Finalizada'),
-                                                                                         ('Sala Athanasius 2B',  'Edificio Athanasius',  '2026-01-02', 3, 55992757, 'Cancelada'),
-                                                                                         ('Sala Madre Marta 1',  'Edificio Madre Marta', '2025-12-08', 4, 10000020, 'Cancelada'),
-                                                                                         ('Sala Mullin 3', 'Edificio Mullin', '2025-12-12', 5, 10000014, 'Finalizada'),
-                                                                                         ('Sala San Ignacio B', 'Edificio San Ignacio', '2025-12-15', 6, 10000008, 'Cancelada');
-
+                                                                                         ('Sala 1',             'Edificio Sacré Coeur',  '2025-11-20', 1, 55992757, 'Finalizada'),
+                                                                                         ('Sala S2',            'Edificio Semprún',      '2025-11-05', 2, 10000020, 'Finalizada'),
+                                                                                         ('Sala Athanasius 2B', 'Edificio Athanasius',   '2026-01-02', 3, 55992757, 'Cancelada'),
+                                                                                         ('Sala Madre Marta 1', 'Edificio Madre Marta',  '2025-11-22', 4, 10000020, 'Sin asistencia'),
+                                                                                         ('Sala Mullin 3',      'Edificio Mullin',       '2025-11-18', 5, 10000014, 'Finalizada'),
+                                                                                         ('Sala San Ignacio B', 'Edificio San Ignacio',  '2025-12-15', 6, 10000008, 'Cancelada');
 
 INSERT INTO reservaParticipante (ci_participante, id_reserva, asistencia, confirmacion, resenado) VALUES
-                                                                                                      (55992757, 1, 'Asiste',    'Confirmado', TRUE),
-                                                                                                      (10000008, 1, 'Asiste',    'Pendiente',  FALSE),
-                                                                                                      (10000014, 1, 'No asiste', 'Rechazado',  FALSE),
+                                                                                                      (55992757,  1, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000008,  1, 'Asiste',    'Pendiente',  FALSE),
+                                                                                                      (10000014,  1, 'No asiste', 'Rechazado',  FALSE),
 
-                                                                                                      (10000020, 2, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (55992757, 2, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020,  2, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757,  2, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (10000014, 3, 'Asiste',    'Confirmado', TRUE),
-                                                                                                      (55992757, 3, 'No asiste', 'Pendiente',  FALSE),
+                                                                                                      (10000014,  3, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (55992757,  3, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (55992757, 4, 'Asiste',    'Confirmado', TRUE),
-                                                                                                      (10000008, 4, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (10000020, 4, 'No asiste', 'Pendiente',  FALSE),
+                                                                                                      (55992757,  4, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000008,  4, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020,  4, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (10000008, 5, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (55992757, 5, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000008,  5, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757,  5, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (10000008, 6, 'Asiste',    'Confirmado', TRUE),
-                                                                                                      (10000014, 6, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (10000020, 6, 'No asiste', 'Pendiente',  FALSE),
+                                                                                                      (10000008,  6, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000014,  6, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020,  6, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (10000020, 7, 'No asiste', 'Confirmado', FALSE),
-                                                                                                      (10000008, 7, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020,  7, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000008,  7, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (55992757, 8, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (10000008, 8, 'Asiste',    'Confirmado', FALSE),
-                                                                                                      (10000014, 8, 'No asiste', 'Pendiente',  FALSE),
-                                                                                                      (55992757, 9, 'Asiste', 'Confirmado', FALSE),
+                                                                                                      (55992757,  8, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000008,  8, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000014,  8, 'No asiste', 'Pendiente',  FALSE),
 
-                                                                                                      (10000020, 10, 'Asiste',   'Confirmado', FALSE),
+                                                                                                      (55992757,  9, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000014,  9, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10010089,  9, 'Asiste',    'Confirmado', FALSE),
 
-                                                                                                      (10000014, 11, 'No asiste','Confirmado', FALSE),
+                                                                                                      (10000020, 10, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10020082, 10, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757, 10, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (10000008, 10, 'Asiste',    'Confirmado', TRUE),
 
-                                                                                                      (10000008, 12, 'Asiste',   'Pendiente',  FALSE),
-                                                                                                      (10010089, 13, 'Asiste', 'Confirmado', FALSE),
-                                                                                                      (10020082, 13, 'Asiste', 'Pendiente', FALSE),
-                                                                                                      (10020082, 14, 'Asiste', 'Confirmado', TRUE),
-                                                                                                      (10040094, 15, 'No asiste', 'Rechazado', FALSE),
-                                                                                                      (10030091, 16, 'Asiste', 'Confirmado', FALSE),
-                                                                                                      (10050100, 16, 'Asiste', 'Confirmado', FALSE);
+                                                                                                      (10000014, 11, 'No asiste', 'Confirmado', FALSE),
+                                                                                                      (10040094, 11, 'Asiste',    'Confirmado', FALSE),
 
+                                                                                                      (10000008, 12, 'Asiste',    'Pendiente',  FALSE),
+                                                                                                      (10030091, 12, 'Asiste',    'Confirmado', FALSE),
 
+                                                                                                      (10010089, 13, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10020082, 13, 'Asiste',    'Pendiente',  FALSE),
+                                                                                                      (10050100, 13, 'Asiste',    'Confirmado', FALSE),
+
+                                                                                                      (10020082, 14, 'Asiste',    'Confirmado', TRUE),
+                                                                                                      (55992757, 14, 'Asiste',    'Confirmado', FALSE),
+
+                                                                                                      (10040094, 15, 'No asiste', 'Rechazado',  FALSE),
+                                                                                                      (10000020, 15, 'Asiste',    'Confirmado', FALSE),
+
+                                                                                                      (10030091, 16, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10050100, 16, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (55992757, 16, 'Asiste',    'Confirmado', FALSE),
+
+                                                                                                      (10000020, 17, 'No asiste',    'Confirmado', FALSE),
+                                                                                                      (10000014, 17, 'No asiste', 'Confirmado', FALSE),
+                                                                                                      (10000070, 17, 'No asiste', 'Confirmado', FALSE),
+
+                                                                                                      (10000014, 18, 'Asiste',    'Confirmado', FALSE),
+                                                                                                      (10000020, 18, 'Asiste',    'Confirmado', FALSE),
+
+                                                                                                      (10000008, 19, 'Asiste',    'Confirmado', FALSE);
 
 INSERT INTO sancion_participante (ci_participante, motivo, fecha_inicio, fecha_fin) VALUES
                                                                                         (10000014, 'Inasistencia', '2025-11-22', '2026-01-22'),
-                                                                                        (10000008, 'Inasistencia',    '2025-11-22', '2026-01-22'),
-                                                                                        (10000020, 'Inasistencia', '2025-11-22', '2026-1-22'),
-                                                                                        (10010089, 'Vandalismo', '2025-12-07', '2025-12-21'),
-                                                                                        (10020082, 'Morosidad', '2025-12-08', '2025-12-22'),
-                                                                                        (10050100, 'Morosidad', '2025-12-06', '2026-12-18');
+                                                                                        (10000020, 'Inasistencia', '2025-11-22', '2026-01-22'),
+                                                                                        (10000070, 'Inasistencia', '2025-11-22', '2026-01-22'),
+                                                                                        (10010089, 'Vandalismo',   '2025-12-07', '2025-12-21'),
+                                                                                        (10020082, 'Morosidad',    '2025-12-08', '2025-12-22'),
+                                                                                        (10050100, 'Morosidad',    '2025-12-06', '2026-12-18');
+
 
 INSERT INTO resena (id_reserva, ci_participante, puntaje_general, descripcion)
 VALUES
-    (9, 55992757, 5, 'Sala amplia y silenciosa'),
-    (9, 10000014, 3, 'Había algo de ruido en la sala'),
+    (9,  55992757, 5, 'Sala amplia y silenciosa'),
+    (9,  10000014, 3, 'Había algo de ruido en la sala'),
     (10, 55992757, 5, 'Muy buena iluminación y espacio'),
     (10, 10000008, 4, 'Sala cómoda, pero la computadora tenía fallas');
 
