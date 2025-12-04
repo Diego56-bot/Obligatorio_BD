@@ -16,7 +16,7 @@ CREATE TABLE usuario (
                              ),
                          rol ENUM('Participante', 'Funcionario', 'Administrador') NOT NULL DEFAULT 'Participante',
                          activo BOOLEAN NOT NULL DEFAULT TRUE,
-                         PRIMARY KEY (ci, email)
+                         PRIMARY KEY (ci)
 );
 
 CREATE TABLE login(
